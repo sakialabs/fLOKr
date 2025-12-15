@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode - Warm and welcoming */
+    --background: 42 20% 97%; /* #FAF7F2 - Warm Off-White */
+    --foreground: 0 0% 17%; /* #2B2B2B - Charcoal */
+
+    --card: 42 20% 97%;
+    --card-foreground: 0 0% 17%;
+
+    --popover: 42 20% 97%;
+    --popover-foreground: 0 0% 17%;
+
+    --primary: 186 59% 30%; /* #1F6F78 - Warm Deep Teal */
+    --primary-foreground: 42 20% 97%;
+
+    --secondary: 14 56% 61%; /* #D97A5B - Soft Clay/Terracotta */
+    --secondary-foreground: 0 0% 17%;
+
+    --muted: 150 10% 90%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 14 56% 61%; /* Clay accent */
+    --accent-foreground: 0 0% 17%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 42 20% 97%;
+
+    --success: 150 28% 56%; /* #6FAF8E - Muted Sage Green */
+    --success-foreground: 0 0% 17%;
+
+    --warning: 45 94% 48%; /* #F2B705 - Soft Amber */
+    --warning-foreground: 0 0% 17%;
+
+    --border: 0 0% 89%;
+    --input: 0 0% 89%;
+    --ring: 186 59% 30%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode - Deep warm charcoal with dignity */
+    --background: 160 13% 9%; /* #121816 - Deep warm charcoal */
+    --foreground: 150 10% 91%; /* #E6ECE8 - Text primary */
+
+    --card: 160 13% 11%; /* #1C2422 - Warm dark slate */
+    --card-foreground: 150 10% 91%;
+
+    --popover: 160 13% 11%;
+    --popover-foreground: 150 10% 91%;
+
+    --primary: 184 37% 47%; /* #4FA3A8 - Teal slightly muted */
+    --primary-foreground: 150 10% 91%;
+
+    --secondary: 11 39% 54%; /* #C26A52 - Clay softened */
+    --secondary-foreground: 150 10% 91%;
+
+    --muted: 160 13% 15%;
+    --muted-foreground: 150 10% 73%; /* #B7C2BC - Secondary text */
+
+    --accent: 11 39% 54%;
+    --accent-foreground: 150 10% 91%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 150 10% 91%;
+
+    --success: 150 28% 56%; /* #6FAF8E - Sage (same) */
+    --success-foreground: 160 13% 9%;
+
+    --warning: 40 54% 55%; /* #D9A441 - Amber dimmed */
+    --warning-foreground: 160 13% 9%;
+
+    --border: 160 13% 15%;
+    --input: 160 13% 15%;
+    --ring: 184 37% 47%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
