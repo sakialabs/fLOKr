@@ -9,6 +9,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db import models
 from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from .models import User
@@ -305,3 +306,84 @@ class OnboardingView(APIView):
         
         serializer = OnboardingPreferencesSerializer(preferences)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class DashboardView(APIView):
+    """Personal dashboard data endpoint."""
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description="Dashboard data"),
+        },
+        tags=['Dashboard']
+    )
+    def get(self, request):
+        """Get personalized dashboard data for My Home page."""
+        from reservations.models import Reservation
+        from inventory.models import InventoryItem
+        from datetime import date, timedelta
+        
+        user = request.user
+        today = date.today()
+        week_from_now = today + timedelta(days=7)
+        
+        # Active reservations (picked up items)
+        active_reservations = Reservation.objects.filter(
+            user=user,
+            status='picked_up'
+        ).select_related('item', 'hub').order_by('expected_return_date')
+        
+        # Upcoming returns (due within next 7 days)
+        upcoming_returns = active_reservations.filter(
+            expected_return_date__lte=week_from_now
+        )
+        
+        # Overdue items
+        overdue_items = active_reservations.filter(
+            expected_return_date__lt=today
+        )
+        
+        # Pending reservations (awaiting pickup)
+        pending_reservations = Reservation.objects.filter(
+            user=user,
+            status__in=['pending', 'confirmed']
+        ).select_related('item', 'hub').order_by('pickup_date')
+        
+        # Ready for pickup
+        ready_for_pickup = pending_reservations.filter(
+            status='confirmed',
+            pickup_date__lte=today
+        )
+        
+        # Personal stats
+        total_borrowed = Reservation.objects.filter(
+            user=user,
+            status__in=['returned', 'picked_up']
+        ).count()
+        
+        on_time_returns = Reservation.objects.filter(
+            user=user,
+            status='returned',
+            actual_return_date__lte=models.F('expected_return_date')
+        ).count()
+        
+        # Serialize data
+        from reservations.serializers import ReservationSerializer
+        
+        dashboard_data = {
+            'summary': {
+                'upcoming_returns_count': upcoming_returns.count(),
+                'overdue_count': overdue_items.count(),
+                'ready_for_pickup_count': ready_for_pickup.count(),
+                'active_reservations_count': active_reservations.count(),
+                'total_borrowed': total_borrowed,
+                'on_time_returns': on_time_returns,
+            },
+            'active_reservations': ReservationSerializer(active_reservations[:5], many=True).data,
+            'upcoming_returns': ReservationSerializer(upcoming_returns, many=True).data,
+            'pending_reservations': ReservationSerializer(pending_reservations[:5], many=True).data,
+            'overdue_items': ReservationSerializer(overdue_items, many=True).data,
+        }
+        
+        return Response(dashboard_data, status=status.HTTP_200_OK)

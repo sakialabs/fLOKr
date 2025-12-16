@@ -4,37 +4,43 @@ Django REST API with JWT authentication, Celery background tasks, and push notif
 
 ## Quick Start
 
+**With Docker (Recommended):**
 ```bash
-# 1. Setup environment
+# Start everything (from project root)
+scripts\docker-start.bat  # Windows
+./scripts/docker-start.sh  # Mac/Linux
+
+# Visit http://localhost:8000/api/docs/
+# Login: admin@flokr.com / admin123
+```
+
+**Without Docker:**
+```bash
+# 1. Setup
 conda env create -f environment.yml
 conda activate flokr
 
 # 2. Start services
-cd ..
-docker-compose up -d
-cd backend
+docker-compose up -d  # Just PostgreSQL & Redis
 
-# 3. Configure
+# 3. Configure & run
 cp .env.example .env
-
-# 4. Migrate & run
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Visit http://localhost:8000/api/docs/ for API documentation.
-
 ## Features
 
-✅ **Authentication** - JWT tokens, role-based permissions (newcomer, steward, admin, partner)
-✅ **User Management** - Registration, profiles, onboarding, preferences
-✅ **Hub System** - Geographic search with PostGIS, steward assignments
+✅ **Authentication** - JWT tokens, role-based permissions
+✅ **User Management** - Registration, profiles, onboarding
+✅ **Hub System** - Geographic search with PostGIS
 ✅ **Inventory** - CRUD, search, filtering, image support
 ✅ **Reservations** - Full lifecycle (create, pickup, return, extend, cancel)
-✅ **Notifications** - Push notifications via Firebase, in-app, preferences, quiet hours
+✅ **Notifications** - Push notifications via Firebase, in-app
 ✅ **Background Tasks** - Celery for expiration, reminders, reports
-✅ **API Docs** - Interactive Swagger UI with drf-spectacular
+✅ **Ori AI** - Image tagging with ResNet50, auto-categorization
+✅ **API Docs** - Interactive Swagger UI
 
 
 ## API Endpoints
@@ -67,10 +73,14 @@ Visit http://localhost:8000/api/docs/ for API documentation.
 ### Inventory (`/api/inventory/items/`)
 - `GET /` - List items (with filters)
 - `GET /search/?q=X&hub_id=Y` - Search items
-- `POST /` - Create item (stewards/admins)
+- `POST /` - Create item (auto-tags from image if `auto_tag=true`)
+- `POST /suggest_tags/` - Preview AI tags before creating
 - `GET /{id}/` - Item details
 - `PUT /{id}/` - Update item
 - `POST /{id}/mark_inactive/` - Mark inactive
+
+### Ori AI (`/api/ori/`)
+- `POST /image-tag/` - Generate tags from image (file or URL)
 
 ### Reservations (`/api/reservations/`)
 - `GET /` - List reservations
@@ -228,10 +238,54 @@ All scripts are in the `scripts/` folder at project root:
 - `scripts/run_tests.py` - Run backend tests
 - `scripts/setup-backend.sh` - Initial backend setup
 
+## Ori AI - Image Tagging
+
+Automatic tag and category generation using ResNet50.
+
+**Test it:**
+```bash
+# Get token
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@flokr.com","password":"admin123"}'
+
+# Tag an image
+curl -X POST http://localhost:8000/api/ori/image-tag/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "image_file=@image.jpg"
+
+# Returns: tags, category, confidence scores (< 5 seconds)
+```
+
+**Auto-tagging on item creation:**
+- Set `auto_tag: true` when creating items
+- First image is analyzed automatically
+- Tags and category are suggested
+- Merges with user-provided tags
+
+**Categories:** clothing, furniture, kitchenware, electronics, toys, household, tools, sports
+
+## Docker
+
+**Start all services:**
+```bash
+scripts\docker-start.bat  # Windows
+./scripts/docker-start.sh  # Mac/Linux
+```
+
+**Includes:** PostgreSQL, Redis, Django, Celery Worker, Celery Beat
+
+**Useful commands:**
+```bash
+docker-compose logs -f backend  # View logs
+docker-compose exec backend python manage.py shell  # Django shell
+docker-compose exec backend pytest -v  # Run tests
+docker-compose down  # Stop all
+```
+
 ## Next Steps
 
-1. ✅ Complete Tasks 1-8 (Auth, Hubs, Inventory, Reservations, Celery, Notifications)
-2. 🔄 Run Checkpoint 1: `scripts/checkpoint.bat` or `./scripts/checkpoint.sh`
-3. ⏭️ Task 10: Ori AI - Image tagging service
+1. ✅ Tasks 1-10 Complete (Auth, Hubs, Inventory, Reservations, Celery, Notifications, Ori AI)
+2. ⏭️ Task 11: Recommendation Engine
 
-See `docs/CHANGELOG.md` for detailed checkpoint verification instructions.
+See `docs/CHANGELOG.md` for details.

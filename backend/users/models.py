@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.gis.db import models as gis_models
 from django.db import models
+from model_utils import FieldTracker
 import uuid
 
 
@@ -62,6 +63,9 @@ class User(AbstractUser):
     # Override username to make it optional
     username = models.CharField(max_length=150, unique=True, blank=True, null=True)
     
+    # Track field changes for geocoding
+    tracker = FieldTracker(fields=['address'])
+    
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
     
@@ -69,6 +73,24 @@ class User(AbstractUser):
     
     def __str__(self):
         return f"{self.get_full_name()} ({self.email})"
+    
+    def save(self, *args, **kwargs):
+        """Override save to geocode address and assign nearest hub."""
+        # Geocode address if it has changed and location is not manually set
+        if self.address and (not self.location or self.tracker.has_changed('address')):
+            from .utils import geocode_address, find_nearest_hub
+            
+            location = geocode_address(self.address)
+            if location:
+                self.location = location
+                
+                # Auto-assign nearest hub if not already assigned
+                if not self.assigned_hub:
+                    nearest_hub = find_nearest_hub(self)
+                    if nearest_hub:
+                        self.assigned_hub = nearest_hub
+        
+        super().save(*args, **kwargs)
     
     class Meta:
         db_table = 'users'

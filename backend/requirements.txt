@@ -19,6 +19,11 @@ django-celery-beat==2.5.0
 # Image Processing
 Pillow==10.1.0
 
+# AI/ML Libraries
+torch==2.1.1
+torchvision==0.16.1
+requests==2.31.0
+
 # Environment Variables
 python-decouple==3.8
 
@@ -45,6 +50,8 @@ django-geojson==4.0.0
 
 # Utilities
 python-dateutil==2.8.2
+geopy==2.4.1
+django-model-utils==4.3.1
 
 # Push Notifications (optional)
 # firebase-admin==6.3.0

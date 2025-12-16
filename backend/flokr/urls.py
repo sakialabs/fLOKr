@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/hubs/', include('hubs.urls')),
     path('api/community/', include('community.urls')),
     path('api/partners/', include('partners.urls')),
+    path('api/ori/', include('ori_ai.urls')),
 ]
 
 # Serve media files in development

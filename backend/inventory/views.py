@@ -89,3 +89,77 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(item)
         return Response(serializer.data)
+    
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'image': {'type': 'string', 'format': 'binary'}
+                }
+            }
+        },
+        responses={200: {
+            'type': 'object',
+            'properties': {
+                'tags': {'type': 'array', 'items': {'type': 'string'}},
+                'category': {'type': 'string'},
+                'detailed_tags': {
+                    'type': 'array',
+                    'items': {
+                        'type': 'object',
+                        'properties': {
+                            'tag': {'type': 'string'},
+                            'confidence': {'type': 'number'}
+                        }
+                    }
+                }
+            }
+        }}
+    )
+    @action(detail=False, methods=['post'], permission_classes=[IsStewardOrAdmin])
+    def suggest_tags(self, request):
+        """
+        Get AI-powered tag and category suggestions for an image.
+        Useful for previewing tags before creating an item.
+        """
+        try:
+            from ori_ai.image_tagger import get_image_tagger
+            import requests as req
+            
+            # Get image data
+            image_data = None
+            
+            if 'image' in request.FILES:
+                # Read uploaded file
+                image_file = request.FILES['image']
+                image_data = image_file.read()
+            elif 'image_url' in request.data:
+                # Download from URL
+                image_url = request.data['image_url']
+                response = req.get(image_url, timeout=5)
+                response.raise_for_status()
+                image_data = response.content
+            else:
+                return Response(
+                    {'error': 'Either image file or image_url must be provided'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Get tagger and generate suggestions
+            tagger = get_image_tagger()
+            tags, category = tagger.suggest_tags_and_category(image_data)
+            detailed_tags = tagger.generate_tags(image_data, top_k=5)
+            
+            return Response({
+                'tags': tags,
+                'category': category,
+                'detailed_tags': detailed_tags,
+                'message': 'Tags generated successfully. You can edit these before creating the item.'
+            })
+            
+        except Exception as e:
+            return Response(
+                {'error': f'Tag suggestion failed: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

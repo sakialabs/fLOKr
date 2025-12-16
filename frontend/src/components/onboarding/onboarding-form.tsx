@@ -96,34 +96,41 @@ export function OnboardingForm() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="arrival_date">When did you arrive? (optional)</Label>
-          <Input
-            id="arrival_date"
-            type="date"
-            value={preferences.arrival_date || ''}
-            onChange={(e) => updatePreference('arrival_date', e.target.value)}
-          />
-        </div>
+        {user?.role === 'newcomer' && (
+          <div className="space-y-2">
+            <Label htmlFor="arrival_date">When did you arrive?</Label>
+            <Input
+              id="arrival_date"
+              type="date"
+              value={preferences.arrival_date || ''}
+              onChange={(e) => updatePreference('arrival_date', e.target.value)}
+              required
+            />
+            <p className="text-sm text-muted-foreground">
+              This helps us provide timely recommendations for your settling-in journey
+            </p>
+          </div>
+        )}
 
         <div className="space-y-2">
-          <Label htmlFor="address">Your address (optional)</Label>
+          <Label htmlFor="address">Your address</Label>
           <Textarea
             id="address"
-            placeholder="123 Main St, Hamilton, ON"
+            placeholder="123 Main St, Hamilton, ON L8P 4R5"
             value={preferences.address || ''}
             onChange={(e) => updatePreference('address', e.target.value)}
             rows={2}
+            required
           />
           <p className="text-sm text-muted-foreground">
-            This helps us connect you with your nearest community hub
+            📍 We'll connect you with your nearest community hub and local mentors
           </p>
         </div>
 
         <div className="space-y-2">
           <Label>Languages you speak</Label>
           <div className="flex flex-wrap gap-2">
-            {['English', 'French', 'Spanish', 'Arabic', 'Mandarin', 'Other'].map((lang) => (
+            {['English', 'French', 'Spanish', 'Arabic', 'Mandarin', 'Urdu', 'Tagalog', 'Other'].map((lang) => (
               <Badge
                 key={lang}
                 variant={preferences.languages_spoken?.includes(lang) ? 'default' : 'outline'}
@@ -134,6 +141,9 @@ export function OnboardingForm() {
               </Badge>
             ))}
           </div>
+          <p className="text-sm text-muted-foreground">
+            🌍 This helps us match you with mentors who speak your language
+          </p>
         </div>
 
         <Button onClick={() => setStep(2)} className="w-full">

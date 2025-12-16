@@ -63,7 +63,48 @@ export default function Home() {
         >
           <motion.div variants={itemVariants} className="space-y-6">
             <div className="flex justify-center">
-              <Logo size={80} className="text-primary" />
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="relative"
+              >
+                {/* Main logo circle */}
+                <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary/20 via-primary/10 to-background flex items-center justify-center backdrop-blur-sm border-2 border-primary/30 shadow-2xl">
+                  <Logo size={96} className="text-primary" />
+                </div>
+                
+                {/* Animated outer ring */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.15, 1],
+                    opacity: [0.6, 0.2, 0.6],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="absolute inset-0 rounded-full border-2 border-primary/40"
+                />
+                
+                {/* Secondary pulse ring */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.25, 1],
+                    opacity: [0.4, 0, 0.4],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 0.5
+                  }}
+                  className="absolute inset-0 rounded-full border-2 border-primary/30"
+                />
+                
+                {/* Glow effect */}
+                <div className="absolute inset-0 rounded-full bg-primary/5 blur-xl" />
+              </motion.div>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
               Welcome to <span className="text-primary">fLOKr</span>

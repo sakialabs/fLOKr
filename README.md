@@ -2,6 +2,19 @@
 
 A digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items while connecting with local mentors and community hubs.
 
+## 🚀 Quick Start
+
+```bash
+# Start with Docker (recommended)
+scripts\docker.bat start  # Windows
+./scripts/docker.sh start  # Mac/Linux
+
+# Visit http://localhost:8000/api/docs/
+# Login: admin@flokr.com / admin123
+```
+
+See [DOCKER.md](DOCKER.md) for full Docker commands.
+
 ## Project Structure
 
 ```
@@ -75,15 +88,19 @@ scripts\checkpoint.bat   # Windows
 ### Manual Setup
 See detailed instructions in [`docs/setup.md`](docs/setup.md)
 
-## Scripts
+## Development Scripts
 
-All utility scripts are in the `scripts/` folder:
+**Docker (Recommended):**
+```bash
+./scripts/docker.sh [start|stop|test|logs|shell]
+```
 
-- **`setup-backend.sh`** - Automated backend setup
-- **`checkpoint.bat` / `checkpoint.sh`** - Run Checkpoint 1 verification
-- **`run_tests.py`** - Run backend tests
+**Other Scripts:**
+- `setup-backend.sh` - Initial backend setup
+- `checkpoint.sh` - Verify milestone completion
+- `run_tests.py` - Run backend tests
 
-See [`scripts/README.md`](scripts/README.md) for details.
+See [DOCKER.md](DOCKER.md) and [scripts/README.md](scripts/README.md) for details.
 
 ## Testing
 

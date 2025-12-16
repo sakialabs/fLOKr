@@ -1,120 +1,61 @@
-# fLOKr Scripts
+# Development Scripts
 
-Utility scripts for development, testing, and deployment.
+## 🐳 Docker (Recommended)
 
-## Setup Scripts
-
-### `setup-backend.sh`
-Initial backend setup with conda environment.
-
-**Usage:**
+**Single command interface:**
 ```bash
-./scripts/setup-backend.sh
+./scripts/docker.sh [command]    # Mac/Linux
+scripts\docker.bat [command]     # Windows
 ```
 
-**What it does:**
-- Checks for conda installation
-- Creates `flokr` conda environment
-- Installs all Python dependencies
-- Provides next steps
+**Commands:**
+| Command | Description |
+|---------|-------------|
+| `start` | Start all services |
+| `stop` | Stop all services |
+| `restart` | Restart services |
+| `logs` | View logs |
+| `shell` | Django shell |
+| `bash` | Container bash |
+| `test` | Run tests |
+| `migrate` | Run migrations |
+| `clean` | Remove all |
+| `status` | Show status |
 
-### `update-env.bat` / `update-env.sh`
-Update existing conda environment with new dependencies (like GDAL).
-
-**Usage:**
+**Quick start:**
 ```bash
-# Windows
-scripts\update-env.bat
-
-# Mac/Linux
-./scripts/update-env.sh
+./scripts/docker.sh start    # Start
+./scripts/docker.sh logs     # Watch
+./scripts/docker.sh test     # Test
+./scripts/docker.sh stop     # Stop
 ```
 
-**What it does:**
-- Updates conda environment from environment.yml
-- Installs GDAL, GEOS, PROJ for GIS support
-- Falls back to direct installation if update fails
-- Verifies installation
+## 🐍 Local Development
 
-## Testing Scripts
-
-### `run_tests.py`
-Run backend tests with custom test runner.
-
-**Usage:**
+**Setup:**
 ```bash
-# Run all tests
-python scripts/run_tests.py
-
-# Run specific app tests
-python scripts/run_tests.py users
-python scripts/run_tests.py reservations
+./scripts/setup-backend.sh    # Initial setup
+./scripts/update-env.sh       # Update deps
 ```
 
-**What it does:**
-- Runs Django test suite
-- Shows detailed output (verbosity=2)
-- Returns exit code 0 on success, 1 on failure
-
-## Checkpoint Scripts
-
-### `checkpoint.bat` (Windows)
-Comprehensive verification for Checkpoint 1.
-
-**Usage:**
+**Testing:**
 ```bash
-scripts\checkpoint.bat
+python scripts/run_tests.py        # All tests
+python scripts/run_tests.py users  # Specific app
 ```
 
-### `checkpoint.sh` (Mac/Linux)
-Comprehensive verification for Checkpoint 1.
-
-**Usage:**
+**Verification:**
 ```bash
-./scripts/checkpoint.sh
+./scripts/checkpoint.sh       # Verify milestone
 ```
 
-**What they do:**
-1. Check database connectivity
-2. Run migrations
-3. Setup Celery periodic tasks
-4. Run system health check
-5. Execute all tests (18 tests total)
-6. Display next steps
-
-**Expected output:**
-```
-✓ Database OK
-✓ Migrations OK
-✓ Periodic tasks OK
-✓ System check complete
-✓ Tests passed (18 tests)
-✅ Checkpoint 1 Complete!
-```
-
-## Making Scripts Executable
-
-### Mac/Linux
+**Multi-service:**
 ```bash
-chmod +x scripts/*.sh
+scripts\start-all.bat         # Start backend + frontend + mobile (Windows)
 ```
 
-### Windows
-Scripts with `.bat` extension are executable by default.
+## 📝 Notes
 
-## Troubleshooting
-
-**"Permission denied" on Mac/Linux:**
-```bash
-chmod +x scripts/checkpoint.sh
-chmod +x scripts/setup-backend.sh
-```
-
-**"Command not found" for Python scripts:**
-```bash
-# Make sure you're in project root
-python scripts/run_tests.py
-```
-
-**Scripts can't find backend:**
-All scripts are designed to run from the project root directory.
+- Run from project root
+- Make executable: `chmod +x scripts/*.sh`
+- See [DOCKER.md](../DOCKER.md) for details

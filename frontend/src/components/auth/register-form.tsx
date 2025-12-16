@@ -26,6 +26,8 @@ export function RegisterForm() {
     phone: '',
     role: 'newcomer',
     preferred_language: 'en',
+    address: '',
+    arrival_date: '',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -167,6 +169,23 @@ export function RegisterForm() {
             <option value="newcomer">Newcomer (seeking resources)</option>
             <option value="community_member">Community Member (offering support)</option>
           </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="address">Address</Label>
+          <Input
+            id="address"
+            type="text"
+            placeholder="123 Main St, Hamilton, ON"
+            value={formData.address}
+            onChange={(e) => handleChange('address', e.target.value)}
+            required
+            disabled={loading}
+          />
+          <p className="text-xs text-muted-foreground">
+            We'll use this to connect you with your nearest community hub and local mentors
+          </p>
+          {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
         </div>
 
         <div className="space-y-2">

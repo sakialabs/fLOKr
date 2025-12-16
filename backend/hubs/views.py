@@ -1,12 +1,13 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.gis.geos import Point
 from django.contrib.gis.db.models.functions import Distance
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from .models import Hub
-from .serializers import HubSerializer, HubListSerializer
+from .models import Hub, Event, Announcement
+from .serializers import HubSerializer, HubListSerializer, EventSerializer, AnnouncementSerializer
 from users.permissions import IsStewardOrAdmin, IsAdminUser
 
 
@@ -80,3 +81,61 @@ class HubViewSet(viewsets.ModelViewSet):
         }
         
         return Response(analytics)
+
+
+class EventViewSet(viewsets.ModelViewSet):
+    """ViewSet for hub events."""
+    queryset = Event.objects.select_related('hub', 'organizer').all()
+    serializer_class = EventSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering = ['event_date']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filter by hub
+        hub_id = self.request.query_params.get('hub')
+        if hub_id:
+            queryset = queryset.filter(hub_id=hub_id)
+        
+        # Filter upcoming events only
+        if self.request.query_params.get('upcoming') == 'true':
+            queryset = queryset.filter(event_date__gte=timezone.now())
+        
+        # Filter past events
+        if self.request.query_params.get('past') == 'true':
+            queryset = queryset.filter(event_date__lt=timezone.now())
+        
+        return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(organizer=self.request.user)
+
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    """ViewSet for hub announcements."""
+    queryset = Announcement.objects.select_related('hub', 'author').all()
+    serializer_class = AnnouncementSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # Filter by hub
+        hub_id = self.request.query_params.get('hub')
+        if hub_id:
+            queryset = queryset.filter(hub_id=hub_id)
+        
+        # Filter active announcements only
+        if self.request.query_params.get('active_only') == 'true':
+            queryset = queryset.filter(
+                active_until__isnull=True
+            ) | queryset.filter(active_until__gte=timezone.now().date())
+        
+        return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)

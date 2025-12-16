@@ -167,7 +167,7 @@
 - [ ] 9. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Ori AI - Image tagging service
+- [x] 10. Ori AI - Image tagging service
   - Set up separate AI service module/microservice
   - Integrate pre-trained image classification model (ResNet50 or EfficientNet)
   - Create image preprocessing pipeline
@@ -176,16 +176,18 @@
   - Optimize for 5-second response time
   - _Requirements: 3.2_
 
+
 - [ ] 10.1 (OPTIONAL) Write property test for automatic image tagging
   - **Property 20: Automatic image tagging**
   - **Validates: Requirements 3.2**
+
 
 - [ ] 10.2 (OPTIONAL) Write unit tests for image preprocessing
   - Test image resizing and normalization
   - Test invalid image handling
   - _Requirements: 3.2_
 
-- [ ] 11. Ori AI - Recommendation engine
+- [x] 11. Ori AI - Recommendation engine
   - Create recommendation service with collaborative filtering
   - Implement user preference-based recommendations
   - Add seasonal recommendation logic
@@ -201,7 +203,7 @@
   - **Property 18: Complementary item suggestions**
   - **Validates: Requirements 5.4**
 
-- [ ] 12. Ori AI - Natural language Q&A system
+- [x] 12. Ori AI - Natural language Q&A system
   - Create FAQ knowledge base model
   - Implement semantic search using sentence transformers
   - Create question answering endpoint

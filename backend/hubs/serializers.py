@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from .models import Hub
+from .models import Hub, Event, Announcement
 from users.serializers import UserProfileSerializer
 
 
@@ -61,3 +61,32 @@ class HubListSerializer(serializers.ModelSerializer):
     
     def get_distance(self, obj):
         return getattr(obj, 'distance', None)
+
+
+class EventSerializer(serializers.ModelSerializer):
+    """Serializer for Event model."""
+    hub_name = serializers.CharField(source='hub.name', read_only=True)
+    organizer_name = serializers.CharField(source='organizer.get_full_name', read_only=True)
+    
+    class Meta:
+        model = Event
+        fields = [
+            'id', 'hub', 'hub_name', 'title', 'description', 'event_type',
+            'event_date', 'duration_hours', 'max_participants', 'organizer',
+            'organizer_name', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    """Serializer for Announcement model."""
+    hub_name = serializers.CharField(source='hub.name', read_only=True)
+    author_name = serializers.CharField(source='author.get_full_name', read_only=True)
+    
+    class Meta:
+        model = Announcement
+        fields = [
+            'id', 'hub', 'hub_name', 'title', 'content', 'priority',
+            'author', 'author_name', 'active_until', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']

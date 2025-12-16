@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'hubs',
     'community',
     'partners',
+    'ori_ai',
 ]
 
 MIDDLEWARE = [

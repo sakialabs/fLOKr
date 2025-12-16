@@ -4,9 +4,18 @@ All notable changes to the fLOKr platform will be documented in this file.
 
 ## [Unreleased]
 
+### ✅ Completed
+- **Task 10: Ori AI - Image Tagging Service** - Automatic tag and category generation
+  - ResNet50-based image analysis
+  - Automatic tagging on item creation
+  - Tag preview endpoint for stewards
+  - Frontend component with real-time AI suggestions
+  - < 5 second processing time
+  - 8 category classifications
+  - Confidence scoring for tags
+
 ### 🔄 In Progress
-- **Checkpoint 1 Verification** - Validating Tasks 1-8
-- Task 10: Ori AI - Image tagging service
+- Task 11: Ori AI - Recommendation engine
 
 ---
 

@@ -71,11 +71,11 @@ export default function ItemsPage() {
           <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="h-full">
               <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-primary" />
-                  <CardTitle>Clothing</CardTitle>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Package className="h-5 w-5 text-primary flex-shrink-0" />
+                  <CardTitle className="truncate">Clothing</CardTitle>
                 </div>
-                <CardDescription>Winter coats, shoes, and more</CardDescription>
+                <CardDescription className="line-clamp-2">Winter coats, shoes, and more</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">Coming soon</p>
@@ -86,11 +86,11 @@ export default function ItemsPage() {
           <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="h-full">
               <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-primary" />
-                  <CardTitle>Household</CardTitle>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Package className="h-5 w-5 text-primary flex-shrink-0" />
+                  <CardTitle className="truncate">Household</CardTitle>
                 </div>
-                <CardDescription>Furniture, kitchenware, and essentials</CardDescription>
+                <CardDescription className="line-clamp-2">Furniture, kitchenware, and essentials</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">Coming soon</p>
@@ -101,11 +101,11 @@ export default function ItemsPage() {
           <motion.div variants={itemVariants} whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="h-full">
               <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-primary" />
-                  <CardTitle>Electronics</CardTitle>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Package className="h-5 w-5 text-primary flex-shrink-0" />
+                  <CardTitle className="truncate">Electronics</CardTitle>
                 </div>
-                <CardDescription>Phones, laptops, and devices</CardDescription>
+                <CardDescription className="line-clamp-2">Phones, laptops, and devices</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">Coming soon</p>

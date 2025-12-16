@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
@@ -8,10 +8,22 @@ import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { MapPin, Users, Package, Calendar } from 'lucide-react'
+import { api } from '@/lib/api'
+
+interface Hub {
+  id: string
+  name: string
+  address: string
+  city: string
+  province: string
+  capacity?: number
+}
 
 export default function HubsPage() {
   const router = useRouter()
   const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
+  const [hubs, setHubs] = useState<Hub[]>([])
+  const [isLoadingHubs, setIsLoadingHubs] = useState(true)
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
@@ -19,15 +31,29 @@ export default function HubsPage() {
     }
   }, [isAuthenticated, loading, router])
 
+  useEffect(() => {
+    const fetchHubs = async () => {
+      try {
+        setIsLoadingHubs(true)
+        const response = await api.get('/hubs/hubs/')
+        const hubsData = Array.isArray(response.data) ? response.data : response.data.results || []
+        setHubs(hubsData)
+      } catch (error) {
+        console.error('Failed to fetch hubs:', error)
+        setHubs([])
+      } finally {
+        setIsLoadingHubs(false)
+      }
+    }
+    
+    if (isAuthenticated) {
+      fetchHubs()
+    }
+  }, [isAuthenticated])
+
   if (loading || !isAuthenticated) {
     return null
   }
-
-  const mockHubs = [
-    { id: 1, name: 'Hub #1 - Downtown', members: 45, items: 120, events: 3 },
-    { id: 2, name: 'Hub #2 - Westside', members: 32, items: 85, events: 2 },
-    { id: 3, name: 'Hub #3 - Eastside', members: 28, items: 95, events: 4 },
-  ]
 
   return (
     <AppLayout>
@@ -39,8 +65,20 @@ export default function HubsPage() {
           </p>
         </div>
 
+        {isLoadingHubs ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading hubs...</p>
+          </div>
+        ) : hubs.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <MapPin className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+              <p className="text-muted-foreground">No hubs found</p>
+            </CardContent>
+          </Card>
+        ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {mockHubs.map((hub, index) => (
+          {hubs.map((hub, index) => (
             <motion.div
               key={hub.id}
               initial={{ opacity: 0, y: 20 }}
@@ -50,39 +88,32 @@ export default function HubsPage() {
             >
               <Card className="h-full hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-lg">{hub.name}</CardTitle>
+                  <div className="flex items-center gap-2 mb-2 min-w-0">
+                    <MapPin className="h-5 w-5 text-primary flex-shrink-0" />
+                    <CardTitle className="text-lg truncate">{hub.name}</CardTitle>
                   </div>
-                  <CardDescription>Active community hub</CardDescription>
+                  {[hub.city, hub.province].filter(Boolean).length > 0 && (
+                    <CardDescription className="truncate">
+                      {[hub.city, hub.province].filter(Boolean).join(', ')}
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Users className="h-4 w-4" />
-                      Members
-                    </span>
-                    <span className="font-semibold">{hub.members}</span>
+                  <div className="text-sm">
+                    <p className="text-muted-foreground line-clamp-2">{hub.address}</p>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Package className="h-4 w-4" />
-                      Items
-                    </span>
-                    <span className="font-semibold">{hub.items}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="flex items-center gap-2 text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      Events
-                    </span>
-                    <span className="font-semibold">{hub.events}</span>
-                  </div>
+                  {hub.capacity && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>Capacity: {hub.capacity}</span>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>
           ))}
         </div>
+        )}
       </div>
     </AppLayout>
   )

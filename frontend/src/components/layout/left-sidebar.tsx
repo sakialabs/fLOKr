@@ -17,7 +17,6 @@ import {
   Menu,
   X,
   LogOut,
-  User,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button } from '@/components/ui/button'
@@ -29,11 +28,11 @@ interface LeftSidebarProps {
 }
 
 const navItems = [
-  { href: '/home', label: 'Home', icon: Home },
+  { href: '/home', label: 'My Home', icon: Home },
   { href: '/reservations', label: 'My Reservations', icon: Calendar },
   { href: '/items', label: 'My Items', icon: Package },
   { href: '/hubs', label: 'Hubs', icon: MapPin },
-  { href: '/community', label: 'Community', icon: Users },
+  { href: '/community', label: 'Community Space', icon: Users },
   { href: '/settings', label: 'Settings', icon: Settings },
 ]
 
@@ -52,25 +51,26 @@ export function LeftSidebar({ collapsed, onToggle }: LeftSidebarProps) {
   return (
     <motion.aside
       initial={false}
-      animate={{ width: collapsed ? 80 : 280 }}
+      animate={{ width: collapsed ? 64 : 256 }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="border-r border-border bg-card flex flex-col"
+      className="border-r border-border bg-card flex flex-col flex-shrink-0"
     >
       {/* Header with Logo and Toggle */}
-      <div className="p-4 border-b border-border">
+      <div className="p-3 border-b border-border flex-shrink-0">
         {!collapsed && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
+              className="min-w-0 flex-1"
             >
-              <Link href="/home" className="flex items-center gap-3 group">
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                  <Logo size={24} className="group-hover:opacity-80 transition-opacity" />
+              <Link href="/home" className="flex items-center gap-2 group min-w-0">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                  <Logo size={20} className="group-hover:opacity-80 transition-opacity" />
                 </div>
-                <h1 className="text-2xl font-bold text-primary cursor-pointer group-hover:opacity-80 transition-opacity">
+                <h1 className="text-xl font-bold text-primary cursor-pointer group-hover:opacity-80 transition-opacity truncate">
                   fLOKr
                 </h1>
               </Link>
@@ -110,28 +110,36 @@ export function LeftSidebar({ collapsed, onToggle }: LeftSidebarProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
+            className="flex items-center gap-2 p-2 rounded-lg bg-muted/50"
           >
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold flex-shrink-0">
+            <button
+              onClick={() => router.push('/profile')}
+              className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0 cursor-pointer hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D97A5B]"
+            >
               {user.first_name[0]}{user.last_name[0]}
-            </div>
+            </button>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold truncate">
+              <p className="text-xs font-semibold truncate">
                 {user.first_name} {user.last_name}
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="text-[10px] text-muted-foreground truncate">
                 {user.email}
               </p>
             </div>
-            <ThemeToggle />
+            <div className="flex-shrink-0">
+              <ThemeToggle />
+            </div>
           </motion.div>
         )}
 
         {collapsed && user && (
-          <div className="flex flex-col items-center gap-3 mt-2">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">
+          <div className="flex flex-col items-center gap-2 mt-2">
+            <button
+              onClick={() => router.push('/profile')}
+              className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold cursor-pointer hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#D97A5B]"
+            >
               {user.first_name[0]}{user.last_name[0]}
-            </div>
+            </button>
             <div className="flex justify-center">
               <ThemeToggle />
             </div>
@@ -140,43 +148,36 @@ export function LeftSidebar({ collapsed, onToggle }: LeftSidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-6">
-        <div className="space-y-3 px-3">
+      <nav className="flex-1 overflow-y-auto py-4">
+        <div className="space-y-1 px-2">
           {navItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
             
             return (
-              <Link key={item.href} href={item.href}>
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3'} px-3 py-3.5 rounded-lg transition-colors ${
-                    isActive
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
-                  {!collapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="text-sm font-medium"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </motion.div>
-              </Link>
+              <button
+                key={item.href}
+                onClick={() => router.push(item.href)}
+                className={`w-full flex items-center ${collapsed ? 'justify-center' : 'gap-2'} px-2 py-2 rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                {!collapsed && (
+                  <span className="text-sm font-medium truncate">
+                    {item.label}
+                  </span>
+                )}
+              </button>
             )
           })}
         </div>
       </nav>
 
       {/* Logout Button */}
-      <div className="border-t border-border p-4">
+      <div className="border-t border-border p-3 flex-shrink-0">
         {!collapsed && (
           <Button
             variant="ghost"

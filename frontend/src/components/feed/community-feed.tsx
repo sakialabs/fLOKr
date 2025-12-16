@@ -69,8 +69,14 @@ const feedTypeConfig: Record<FeedItemType, { icon: any; color: string; bg: strin
   updates: { icon: MessageCircle, color: 'text-primary', bg: 'bg-primary/10' },
 }
 
-export function CommunityFeed() {
-  const [filter, setFilter] = useState<'all' | FeedItemType>('all')
+interface CommunityFeedProps {
+  showHeader?: boolean
+  defaultFilter?: 'all' | 'updates'
+  hideMyUpdates?: boolean
+}
+
+export function CommunityFeed({ showHeader = true, defaultFilter = 'all', hideMyUpdates = false }: CommunityFeedProps) {
+  const [filter, setFilter] = useState<'all' | FeedItemType>(defaultFilter === 'updates' ? 'updates' : 'all')
   const [hasUnreadUpdates, setHasUnreadUpdates] = useState(true)
 
   const filteredFeed = filter === 'all'
@@ -103,25 +109,29 @@ export function CommunityFeed() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Community Feed</h1>
-          <p className="text-muted-foreground">
-            Stay updated with your hub and community
-          </p>
+      {/* Header - Only show on Community page */}
+      {showHeader && (
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Community Space</h1>
+            <p className="text-muted-foreground">
+              What's happening across your hub
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="flex gap-2 overflow-x-auto overflow-y-visible pb-2 pt-1">
-        <Button
-          variant={filter === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilter('all')}
-        >
-          All Updates
-        </Button>
+        {!hideMyUpdates && (
+          <Button
+            variant={filter === 'all' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilter('all')}
+          >
+            All Updates
+          </Button>
+        )}
         <Button
           variant={filter === 'item' ? 'default' : 'outline'}
           size="sm"
@@ -154,19 +164,21 @@ export function CommunityFeed() {
           <MapPin className="h-4 w-4 mr-2" />
           Announcements
         </Button>
-        <div className="relative">
-          <Button
-            variant={filter === 'updates' ? 'default' : 'outline'}
-            size="sm"
-            onClick={handleUpdatesClick}
-          >
-            My Updates
-          </Button>
-          {/* Notification dot - positioned outside button like online status */}
-          {hasUnreadUpdates && (
-            <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-primary rounded-full ring-2 ring-background" />
-          )}
-        </div>
+        {!hideMyUpdates && (
+          <div className="relative">
+            <Button
+              variant={filter === 'updates' ? 'default' : 'outline'}
+              size="sm"
+              onClick={handleUpdatesClick}
+            >
+              My Updates
+            </Button>
+            {/* Notification dot - positioned outside button like online status */}
+            {hasUnreadUpdates && (
+              <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-primary rounded-full ring-2 ring-background" />
+            )}
+          </div>
+        )}
       </div>
 
       {/* Feed */}
@@ -189,20 +201,20 @@ export function CommunityFeed() {
             >
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
-                  <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${config.bg}`}>
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className={`p-2 rounded-lg ${config.bg} flex-shrink-0`}>
                       <Icon className={`h-5 w-5 ${config.color}`} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-base mb-1">{item.title}</h3>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span>{item.timestamp}</span>
+                      <h3 className="font-semibold text-base mb-1 truncate">{item.title}</h3>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
+                        <span className="whitespace-nowrap">{item.timestamp}</span>
                         {item.hub && (
                           <>
                             <span>•</span>
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {item.hub}
+                            <span className="flex items-center gap-1 truncate">
+                              <MapPin className="h-3 w-3 flex-shrink-0" />
+                              <span className="truncate">{item.hub}</span>
                             </span>
                           </>
                         )}
@@ -211,7 +223,7 @@ export function CommunityFeed() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
                     {item.content}
                   </p>
                   
