@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
+from django.db import models
 from datetime import timedelta
 from drf_spectacular.utils import extend_schema
 from .models import Reservation
@@ -80,15 +81,27 @@ class ReservationViewSet(viewsets.ModelViewSet):
         item.save()
         
         # Check if return is late
-        if reservation.actual_return_date > reservation.expected_return_date:
-            user = reservation.user
-            user.late_return_count += 1
+        user = reservation.user
+        is_late = reservation.actual_return_date > reservation.expected_return_date
+        
+        if is_late:
+            # Use late return service to handle penalties
+            from .late_return_service import LateReturnService
+            LateReturnService.apply_late_return_penalty(user, reservation)
+        else:
+            # Award reputation for on-time return
+            from community.reputation_service import ReputationService
+            ReputationService.award_points(user, 'on_time_return')
             
-            # Restrict borrowing after 3 late returns
-            if user.late_return_count >= 3:
-                user.borrowing_restricted_until = timezone.now() + timedelta(days=30)
+            # Check for consecutive on-time returns
+            recent_returns = Reservation.objects.filter(
+                user=user,
+                status='returned',
+                actual_return_date__lte=models.F('expected_return_date')
+            ).order_by('-actual_return_date')[:5]
             
-            user.save()
+            if recent_returns.count() >= 5:
+                ReputationService.award_points(user, 'consecutive_returns')
         
         serializer = self.get_serializer(reservation)
         return Response(serializer.data)
@@ -168,4 +181,52 @@ class ReservationViewSet(viewsets.ModelViewSet):
         reservation.save()
         
         serializer = self.get_serializer(reservation)
-        return Response(serializer.data)
+        return Response(serializer.data)    
+    @action(detail=False, methods=['get'])
+    def restriction_status(self, request):
+        """Get current user's borrowing restriction status."""
+        from .late_return_service import LateReturnService
+        
+        status_info = LateReturnService.get_restriction_status(request.user)
+        return Response(status_info)
+    
+    @action(detail=False, methods=['post'], permission_classes=[IsStewardOrAdmin])
+    def lift_restriction(self, request):
+        """
+        Lift a user's borrowing restriction (stewards/admins only).
+        Requires 'user_id' and optional 'reason' in request data.
+        """
+        from .late_return_service import LateReturnService
+        from django.contrib.auth import get_user_model
+        
+        user_id = request.data.get('user_id')
+        reason = request.data.get('reason', 'Lifted by steward')
+        
+        if not user_id:
+            return Response(
+                {'error': 'user_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            User = get_user_model()
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'User not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        success = LateReturnService.lift_restriction(user, lifted_by=request.user, reason=reason)
+        
+        if success:
+            return Response({
+                'message': f'Borrowing restriction lifted for {user.get_full_name()}',
+                'user_id': str(user.id),
+                'reason': reason
+            })
+        else:
+            return Response(
+                {'error': 'User does not have an active restriction'},
+                status=status.HTTP_400_BAD_REQUEST
+            )

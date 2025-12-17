@@ -171,7 +171,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'user': '100/minute',
         'anon': '20/minute',
-    }
+    },
+    'EXCEPTION_HANDLER': 'flokr.exception_handler.custom_exception_handler',
 }
 
 # JWT Configuration
@@ -293,6 +294,12 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# Translation Service Configuration
+TRANSLATION_BACKEND = config('TRANSLATION_BACKEND', default='mock')  # 'google', 'libretranslate', or 'mock'
+TRANSLATION_CACHE_TTL = 86400  # 24 hours
+LIBRETRANSLATE_URL = config('LIBRETRANSLATE_URL', default='https://libretranslate.com/translate')
+LIBRETRANSLATE_API_KEY = config('LIBRETRANSLATE_API_KEY', default=None)
 
 # Security Settings (for production)
 if not DEBUG:

@@ -674,3 +674,69 @@ def generate_reservation_report():
     except Exception as e:
         logger.error(f"Error in generate_reservation_report: {str(e)}", exc_info=True)
         return {'error': str(e)}
+
+@shared_task(
+    bind=True,
+    name='reservations.lift_expired_restrictions',
+    max_retries=3,
+    default_retry_delay=300,
+)
+def lift_expired_restrictions(self):
+    """
+    Automatically lift expired borrowing restrictions.
+    
+    This task:
+    1. Finds all users with expired restrictions
+    2. Lifts their restrictions
+    3. Sends restoration notifications
+    
+    Runs: Daily via Celery Beat
+    """
+    try:
+        from reservations.late_return_service import LateReturnService
+        
+        count = LateReturnService.check_and_lift_expired_restrictions()
+        
+        logger.info(f"Lifted {count} expired borrowing restrictions")
+        
+        return {
+            'restrictions_lifted': count,
+            'timestamp': timezone.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in lift_expired_restrictions: {str(e)}", exc_info=True)
+        self.retry(exc=e)
+
+
+@shared_task(
+    bind=True,
+    name='reservations.send_restriction_reminders',
+    max_retries=3,
+    default_retry_delay=300,
+)
+def send_restriction_reminders(self):
+    """
+    Send reminders to users whose restrictions are ending soon.
+    
+    This task:
+    1. Finds users with restrictions ending in the next 7 days
+    2. Sends them reminder notifications
+    
+    Runs: Daily via Celery Beat
+    """
+    try:
+        from reservations.late_return_service import LateReturnService
+        
+        count = LateReturnService.send_approaching_restriction_reminders()
+        
+        logger.info(f"Sent {count} restriction ending reminders")
+        
+        return {
+            'reminders_sent': count,
+            'timestamp': timezone.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in send_restriction_reminders: {str(e)}", exc_info=True)
+        self.retry(exc=e)

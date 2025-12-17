@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { User, Mail, Phone, MapPin } from 'lucide-react'
+import { ProfilePictureUpload } from '@/components/profile/profile-picture-upload'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -62,8 +63,17 @@ export default function ProfilePage() {
 
         <motion.div
           variants={containerVariants}
-          className="grid gap-6 md:grid-cols-2"
+          className="grid gap-6 md:grid-cols-3"
         >
+          {/* Profile Picture Card */}
+          <motion.div variants={itemVariants} whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
+            <ProfilePictureUpload
+              currentPictureUrl={user.profile_picture}
+              userName={`${user.first_name} ${user.last_name}`}
+            />
+          </motion.div>
+
+          {/* Personal Information Card */}
           <motion.div variants={itemVariants} whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="h-full">
               <CardHeader>
@@ -111,6 +121,7 @@ export default function ProfilePage() {
             </Card>
           </motion.div>
 
+          {/* Account Stats Card */}
           <motion.div variants={itemVariants} whileHover={{ scale: 1.01 }} transition={{ type: "spring", stiffness: 300 }}>
             <Card className="h-full">
               <CardHeader>

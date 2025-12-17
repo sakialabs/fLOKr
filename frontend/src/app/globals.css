@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Phone input styles */
+.PhoneInput {
+  @apply flex items-center;
+}
+
+.PhoneInputInput {
+  @apply flex-1 bg-transparent outline-none;
+}
+
+.PhoneInputCountry {
+  @apply flex items-center gap-1 mr-2;
+}
+
 @layer base {
   :root {
     /* Light mode - Warm and welcoming */

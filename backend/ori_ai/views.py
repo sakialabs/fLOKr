@@ -17,7 +17,17 @@ from .serializers import (
     RecommendationSerializer,
     QuestionRequestSerializer,
     QuestionResponseSerializer,
-    FAQEntrySerializer
+    FAQEntrySerializer,
+    TranslationRequestSerializer,
+    TranslationResponseSerializer,
+    TranslationBatchRequestSerializer,
+    LanguageDetectionRequestSerializer,
+    LanguageDetectionResponseSerializer,
+    SupportedLanguagesSerializer,
+    DemandForecastRequestSerializer,
+    DemandForecastResponseSerializer,
+    HighDemandItemSerializer,
+    HighDemandAlertRequestSerializer
 )
 from .image_tagger import get_image_tagger
 from .recommender import recommender
@@ -561,5 +571,257 @@ class FAQsByCategoryView(APIView):
             logger.error(f"FAQs by category failed: {e}")
             return Response(
                 {"error": "FAQ service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class TranslationView(APIView):
+    """
+    Translate text between languages
+    Supports automatic language detection and caching
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        request=TranslationRequestSerializer,
+        responses={200: TranslationResponseSerializer},
+        description="Translate text to target language",
+        tags=['Ori AI']
+    )
+    def post(self, request):
+        """Translate text with caching"""
+        from .serializers import TranslationRequestSerializer, TranslationResponseSerializer
+        from .translation_service import get_translation_service
+        
+        serializer = TranslationRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            translation_service = get_translation_service()
+            result = translation_service.translate(
+                text=serializer.validated_data['text'],
+                target_lang=serializer.validated_data['target_language'],
+                source_lang=serializer.validated_data.get('source_language')
+            )
+            
+            return Response(result, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Translation failed: {e}")
+            return Response(
+                {"error": "Translation service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class TranslationBatchView(APIView):
+    """
+    Translate multiple texts in batch
+    More efficient for translating multiple strings
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        request=TranslationBatchRequestSerializer,
+        responses={200: TranslationResponseSerializer(many=True)},
+        description="Translate multiple texts to target language",
+        tags=['Ori AI']
+    )
+    def post(self, request):
+        """Batch translate texts"""
+        from .serializers import TranslationBatchRequestSerializer
+        from .translation_service import get_translation_service
+        
+        serializer = TranslationBatchRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            translation_service = get_translation_service()
+            results = translation_service.translate_batch(
+                texts=serializer.validated_data['texts'],
+                target_lang=serializer.validated_data['target_language'],
+                source_lang=serializer.validated_data.get('source_language')
+            )
+            
+            return Response(results, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Batch translation failed: {e}")
+            return Response(
+                {"error": "Translation service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class LanguageDetectionView(APIView):
+    """
+    Detect the language of text
+    Useful for automatic language handling
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        request=LanguageDetectionRequestSerializer,
+        responses={200: LanguageDetectionResponseSerializer},
+        description="Detect the language of text",
+        tags=['Ori AI']
+    )
+    def post(self, request):
+        """Detect language of text"""
+        from .serializers import LanguageDetectionRequestSerializer
+        from .translation_service import get_translation_service
+        
+        serializer = LanguageDetectionRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            translation_service = get_translation_service()
+            detected_lang = translation_service.detect_language(
+                serializer.validated_data['text']
+            )
+            
+            result = {
+                'detected_language': detected_lang,
+                'language_name': translation_service.LANGUAGE_NAMES.get(detected_lang, 'Unknown')
+            }
+            
+            return Response(result, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Language detection failed: {e}")
+            return Response(
+                {"error": "Language detection service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class SupportedLanguagesView(APIView):
+    """
+    Get list of supported languages
+    Public endpoint, no authentication required
+    """
+    permission_classes = []
+    
+    @extend_schema(
+        responses={200: SupportedLanguagesSerializer(many=True)},
+        description="Get list of supported languages for translation",
+        tags=['Ori AI']
+    )
+    def get(self, request):
+        """Get supported languages"""
+        from .translation_service import get_translation_service
+        
+        try:
+            translation_service = get_translation_service()
+            languages = translation_service.get_supported_languages()
+            
+            return Response(languages, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Get supported languages failed: {e}")
+            return Response(
+                {"error": "Service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class DemandForecastView(APIView):
+    """
+    Generate demand forecast for items
+    Uses time-series analysis with seasonal and newcomer adjustments
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('item_id', int, description='Specific item ID'),
+            OpenApiParameter('category', str, description='Item category'),
+            OpenApiParameter('hub_id', int, description='Hub ID filter'),
+            OpenApiParameter('days_forward', int, description='Forecast period (1-90 days)')
+        ],
+        responses={200: DemandForecastResponseSerializer},
+        description="Generate demand forecast with historical, seasonal, and newcomer data",
+        tags=['Ori AI']
+    )
+    def get(self, request):
+        """Generate demand forecast"""
+        from .demand_forecaster import get_demand_forecaster
+        
+        # Parse query parameters
+        params = {
+            'item_id': request.query_params.get('item_id'),
+            'category': request.query_params.get('category'),
+            'hub_id': request.query_params.get('hub_id'),
+            'days_forward': int(request.query_params.get('days_forward', 30))
+        }
+        
+        # Filter out None values
+        params = {k: v for k, v in params.items() if v is not None}
+        
+        # Validate
+        serializer = DemandForecastRequestSerializer(data=params)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            forecaster = get_demand_forecaster()
+            forecast = forecaster.generate_forecast(**serializer.validated_data)
+            
+            return Response(forecast, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Demand forecast failed: {e}")
+            return Response(
+                {"error": "Forecast service temporarily unavailable"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class HighDemandAlertsView(APIView):
+    """
+    Get items with high demand relative to inventory
+    Alerts stewards when items need restocking
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        parameters=[
+            OpenApiParameter('hub_id', int, description='Hub ID to check'),
+            OpenApiParameter('threshold', float, description='Demand/inventory ratio threshold (default 0.5)')
+        ],
+        responses={200: HighDemandItemSerializer(many=True)},
+        description="Get items with demand exceeding threshold relative to inventory",
+        tags=['Ori AI']
+    )
+    def get(self, request):
+        """Get high demand alerts"""
+        from .demand_forecaster import get_demand_forecaster
+        
+        hub_id = request.query_params.get('hub_id')
+        threshold = float(request.query_params.get('threshold', 0.5))
+        
+        # Validate threshold
+        if threshold < 0.1 or threshold > 2.0:
+            return Response(
+                {"error": "Threshold must be between 0.1 and 2.0"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            forecaster = get_demand_forecaster()
+            high_demand_items = forecaster.get_high_demand_items(
+                hub_id=int(hub_id) if hub_id else None,
+                threshold=threshold
+            )
+            
+            return Response(high_demand_items, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"High demand alerts failed: {e}")
+            return Response(
+                {"error": "Alert service temporarily unavailable"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

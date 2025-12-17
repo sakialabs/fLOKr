@@ -6,6 +6,7 @@ router = DefaultRouter()
 router.register(r'hubs', views.HubViewSet, basename='hub')
 router.register(r'events', views.EventViewSet, basename='event')
 router.register(r'announcements', views.AnnouncementViewSet, basename='announcement')
+router.register(r'admin', views.PlatformAdminViewSet, basename='platform-admin')
 
 urlpatterns = [
     path('', include(router.urls)),

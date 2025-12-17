@@ -8,7 +8,13 @@ from .views import (
     PopularItemsView,
     AskQuestionView,
     PopularFAQsView,
-    FAQsByCategoryView
+    FAQsByCategoryView,
+    TranslationView,
+    TranslationBatchView,
+    LanguageDetectionView,
+    SupportedLanguagesView,
+    DemandForecastView,
+    HighDemandAlertsView
 )
 
 app_name = 'ori_ai'
@@ -28,4 +34,14 @@ urlpatterns = [
     path('ask/', AskQuestionView.as_view(), name='ask-question'),
     path('faqs/popular/', PopularFAQsView.as_view(), name='popular-faqs'),
     path('faqs/category/', FAQsByCategoryView.as_view(), name='faqs-by-category'),
+    
+    # Translation
+    path('translate/', TranslationView.as_view(), name='translate'),
+    path('translate/batch/', TranslationBatchView.as_view(), name='translate-batch'),
+    path('translate/detect/', LanguageDetectionView.as_view(), name='detect-language'),
+    path('languages/', SupportedLanguagesView.as_view(), name='supported-languages'),
+    
+    # Demand Forecasting
+    path('forecast/', DemandForecastView.as_view(), name='demand-forecast'),
+    path('alerts/high-demand/', HighDemandAlertsView.as_view(), name='high-demand-alerts'),
 ]

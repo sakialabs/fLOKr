@@ -1,7 +1,7 @@
 import logging
 import requests
 from rest_framework import serializers
-from .models import InventoryItem
+from .models import InventoryItem, InventoryTransfer
 from hubs.serializers import HubListSerializer
 from users.serializers import UserProfileSerializer
 
@@ -18,9 +18,11 @@ class InventoryItemSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'hub', 'hub_details', 'name', 'description', 'category',
             'tags', 'condition', 'images', 'quantity_total', 'quantity_available',
-            'donor', 'donor_details', 'status', 'created_at', 'updated_at'
+            'donor', 'donor_details', 'status', 'incident_report_count', 
+            'is_flagged', 'flagged_at', 'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'incident_report_count', 
+                           'is_flagged', 'flagged_at']
     
     def validate(self, data):
         """Validate quantity_available <= quantity_total."""
@@ -151,3 +153,26 @@ class InventoryItemCreateSerializer(serializers.ModelSerializer):
             data['suggested_category'] = self._suggested_category
         
         return data
+
+class InventoryTransferSerializer(serializers.ModelSerializer):
+    """Serializer for InventoryTransfer model."""
+    item_details = InventoryItemListSerializer(source='item', read_only=True)
+    from_hub_name = serializers.CharField(source='from_hub.name', read_only=True)
+    to_hub_name = serializers.CharField(source='to_hub.name', read_only=True)
+    initiated_by_name = serializers.CharField(source='initiated_by.get_full_name', read_only=True)
+    approved_by_name = serializers.CharField(source='approved_by.get_full_name', read_only=True)
+    completed_by_name = serializers.CharField(source='completed_by.get_full_name', read_only=True)
+    
+    class Meta:
+        model = InventoryTransfer
+        fields = [
+            'id', 'item', 'item_details', 'from_hub', 'from_hub_name', 
+            'to_hub', 'to_hub_name', 'quantity', 'status',
+            'initiated_by', 'initiated_by_name', 'approved_by', 'approved_by_name',
+            'completed_by', 'completed_by_name', 'reason', 'notes',
+            'created_at', 'approved_at', 'completed_at', 'updated_at'
+        ]
+        read_only_fields = [
+            'id', 'status', 'approved_by', 'completed_by',
+            'created_at', 'approved_at', 'completed_at', 'updated_at'
+        ]

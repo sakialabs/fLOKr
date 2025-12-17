@@ -77,11 +77,13 @@ psql flokr_db -c "CREATE EXTENSION postgis;"
 ## Environment Variables
 
 1. Copy the example file:
+
 ```bash
 cp .env.example .env
 ```
 
 2. Edit `.env` with your settings:
+
 ```env
 SECRET_KEY=your-secret-key-here
 DEBUG=True
@@ -112,9 +114,10 @@ python manage.py runserver
 ```
 
 The API will be available at:
-- API: http://localhost:8000/api/
-- Admin: http://localhost:8000/admin/
-- API Docs: http://localhost:8000/api/docs/
+
+- API: <http://localhost:8000/api/>
+- Admin: <http://localhost:8000/admin/>
+- API Docs: <http://localhost:8000/api/docs/>
 
 ## Start Celery (Background Tasks)
 
@@ -123,12 +126,14 @@ Celery handles background jobs like reservation expiration, reminders, and notif
 ### Quick Start
 
 **Terminal 1: Celery Worker**
+
 ```bash
 conda activate flokr  # or activate your venv
 celery -A flokr worker -l info --pool=solo  # --pool=solo for Windows
 ```
 
 **Terminal 2: Celery Beat (Scheduler)**
+
 ```bash
 conda activate flokr
 celery -A flokr beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
@@ -137,6 +142,7 @@ celery -A flokr beat -l info --scheduler django_celery_beat.schedulers:DatabaseS
 ### Setup Periodic Tasks
 
 First time only:
+
 ```bash
 python manage.py migrate django_celery_beat
 python manage.py setup_periodic_tasks
@@ -145,6 +151,7 @@ python manage.py setup_periodic_tasks
 ### Monitor Celery
 
 Check status:
+
 ```bash
 python manage.py celery_status
 ```
@@ -183,6 +190,7 @@ flake8
 ### "No module named 'django'"
 
 Make sure your conda environment is activated:
+
 ```bash
 conda activate flokr
 ```
@@ -190,6 +198,7 @@ conda activate flokr
 ### Database connection errors
 
 1. Check if PostgreSQL is running:
+
 ```bash
 docker-compose ps
 ```
@@ -199,6 +208,7 @@ docker-compose ps
 ### Port already in use
 
 If port 8000 is taken:
+
 ```bash
 python manage.py runserver 8001
 ```
@@ -206,6 +216,7 @@ python manage.py runserver 8001
 ### PostGIS errors
 
 Make sure PostGIS extension is enabled:
+
 ```bash
 psql flokr_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 ```
@@ -213,6 +224,7 @@ psql flokr_db -c "CREATE EXTENSION IF NOT EXISTS postgis;"
 ## Quick Start (All-in-One)
 
 ### Backend
+
 ```bash
 # Automated setup
 ./scripts/setup-backend.sh
@@ -232,6 +244,7 @@ python manage.py runserver
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 npm install
@@ -241,6 +254,7 @@ npm run dev
 ```
 
 ### Mobile
+
 ```bash
 cd mobile
 npm install
@@ -250,22 +264,21 @@ npm start
 ```
 
 **Access:**
-- Backend API: http://localhost:8000/api/docs/
-- Frontend: http://localhost:3000
+
+- Backend API: <http://localhost:8000/api/docs/>
+- Frontend: <http://localhost:3000>
 - Mobile: Expo DevTools in browser
 
 ---
 
 # Backend Setup
 
-
-
-
 ---
 
 # Frontend Setup
 
 ## Prerequisites
+
 - Node.js 18+
 - npm or yarn
 
@@ -283,6 +296,7 @@ cp .env.example .env.local
 ```
 
 Edit `.env.local`:
+
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
@@ -293,9 +307,10 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 npm run dev
 ```
 
-Visit http://localhost:3000
+Visit <http://localhost:3000>
 
 ## Tech Stack
+
 - Next.js 15 (App Router)
 - TypeScript (strict mode)
 - shadcn/ui components
@@ -304,6 +319,7 @@ Visit http://localhost:3000
 - Redux Toolkit + TanStack Query
 
 ## Design System
+
 **Light:** Warm Off-White bg, Deep Teal primary, Soft Clay secondary
 **Dark:** Deep Charcoal bg, Teal Muted primary, Clay Softened accent
 
@@ -312,6 +328,7 @@ Visit http://localhost:3000
 # Mobile Setup
 
 ## Prerequisites
+
 - Node.js 18+
 - Expo CLI: `npm install -g expo-cli`
 - iOS: Xcode (Mac only)
@@ -331,6 +348,7 @@ cp .env.example .env
 ```
 
 Edit `.env`:
+
 ```env
 API_URL=http://localhost:8000
 ```
@@ -342,11 +360,13 @@ npm start
 ```
 
 Then:
+
 - Press `i` for iOS simulator
 - Press `a` for Android emulator
 - Scan QR code with Expo Go app
 
 ## Tech Stack
+
 - React Native with Expo
 - TypeScript
 - Redux Toolkit
@@ -360,11 +380,13 @@ Then:
 ## Start All Services
 
 **Terminal 1: Databases**
+
 ```bash
 docker-compose up
 ```
 
 **Terminal 2: Backend**
+
 ```bash
 cd backend
 conda activate flokr
@@ -372,6 +394,7 @@ python manage.py runserver
 ```
 
 **Terminal 3: Celery Worker**
+
 ```bash
 cd backend
 conda activate flokr
@@ -379,6 +402,7 @@ celery -A flokr worker -l info --pool=solo
 ```
 
 **Terminal 4: Celery Beat**
+
 ```bash
 cd backend
 conda activate flokr
@@ -386,18 +410,21 @@ celery -A flokr beat -l info --scheduler django_celery_beat.schedulers:DatabaseS
 ```
 
 **Terminal 5: Frontend**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
 **Terminal 6: Mobile**
+
 ```bash
 cd mobile
 npm start
 ```
 
 ## Ports
+
 - Backend: 8000
 - Frontend: 3000
 - PostgreSQL: 5432

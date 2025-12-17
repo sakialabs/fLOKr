@@ -22,6 +22,7 @@ Pillow==10.1.0
 # AI/ML Libraries
 torch==2.1.1
 torchvision==0.16.1
+numpy<2.0.0
 requests==2.31.0
 
 # Environment Variables

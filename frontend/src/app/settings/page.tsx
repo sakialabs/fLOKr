@@ -1,115 +1,96 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
-import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Bell, Lock, User, Globe } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { User, Lock, Globe } from 'lucide-react'
+import { PersonalInfoSettings } from '@/components/settings/personal-info-settings'
+import { SecuritySettings } from '@/components/settings/security-settings'
+import { PreferencesSettings } from '@/components/settings/preferences-settings'
 
 export default function SettingsPage() {
   const router = useRouter()
-  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
+  const { user, isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
+  const [activeTab, setActiveTab] = useState('personal')
 
   useEffect(() => {
     if (!loading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, loading, router])
+  }, [loading, isAuthenticated, router])
 
-  if (loading || !isAuthenticated) {
+  if (loading || !user) {
     return null
   }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4 }
-    }
-  }
-
-  const settingsCards = [
-    {
-      icon: User,
-      title: 'Profile Settings',
-      description: 'Update your personal information',
-    },
-    {
-      icon: Bell,
-      title: 'Notifications',
-      description: 'Manage notification preferences',
-    },
-    {
-      icon: Lock,
-      title: 'Privacy',
-      description: 'Control your privacy settings',
-    },
-    {
-      icon: Globe,
-      title: 'Language',
-      description: 'Choose your preferred language',
-    },
-  ]
 
   return (
     <AppLayout>
       <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
         className="space-y-6"
       >
-        <motion.div variants={itemVariants}>
+        <div>
           <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
           <p className="text-muted-foreground">
-            Manage your account and preferences
+            Manage your account settings and preferences
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={containerVariants}
-          className="grid gap-4 md:grid-cols-2"
-        >
-          {settingsCards.map((setting, index) => {
-            const Icon = setting.icon
-            return (
-              <motion.div
-                key={setting.title}
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <Card className="h-full hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-center gap-2">
-                      <Icon className="h-5 w-5 text-primary" />
-                      <CardTitle>{setting.title}</CardTitle>
-                    </div>
-                    <CardDescription>{setting.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button variant="outline" disabled>Coming soon</Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )
-          })}
-        </motion.div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="personal" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
+              <span className="hidden sm:inline">Personal Info</span>
+              <span className="sm:hidden">Info</span>
+            </TabsTrigger>
+            <TabsTrigger value="security" className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              <span className="hidden sm:inline">Security</span>
+              <span className="sm:hidden">Security</span>
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              <span className="hidden sm:inline">Preferences</span>
+              <span className="sm:hidden">Prefs</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="personal" className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <PersonalInfoSettings user={user} />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <SecuritySettings />
+            </motion.div>
+          </TabsContent>
+
+          <TabsContent value="preferences" className="space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <PreferencesSettings user={user} />
+            </motion.div>
+          </TabsContent>
+        </Tabs>
       </motion.div>
     </AppLayout>
   )

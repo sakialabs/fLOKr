@@ -134,3 +134,159 @@ class QuestionResponseSerializer(serializers.Serializer):
     method = serializers.CharField(
         help_text="Search method used (semantic/keyword/fallback)"
     )
+
+
+class TranslationRequestSerializer(serializers.Serializer):
+    """Serializer for translation request"""
+    text = serializers.CharField(
+        required=True,
+        help_text="Text to translate",
+        max_length=5000
+    )
+    target_language = serializers.CharField(
+        required=True,
+        help_text="Target language code (e.g., 'es', 'ar', 'fr')",
+        max_length=10
+    )
+    source_language = serializers.CharField(
+        required=False,
+        help_text="Source language code (auto-detect if not provided)",
+        max_length=10
+    )
+
+
+class TranslationBatchRequestSerializer(serializers.Serializer):
+    """Serializer for batch translation request"""
+    texts = serializers.ListField(
+        child=serializers.CharField(max_length=5000),
+        required=True,
+        help_text="List of texts to translate",
+        max_length=50  # Limit to 50 texts per request
+    )
+    target_language = serializers.CharField(
+        required=True,
+        help_text="Target language code",
+        max_length=10
+    )
+    source_language = serializers.CharField(
+        required=False,
+        help_text="Source language code (auto-detect if not provided)",
+        max_length=10
+    )
+
+
+class TranslationResponseSerializer(serializers.Serializer):
+    """Serializer for translation response"""
+    translated_text = serializers.CharField(
+        help_text="Translated text"
+    )
+    source_lang = serializers.CharField(
+        help_text="Detected or provided source language"
+    )
+    target_lang = serializers.CharField(
+        help_text="Target language"
+    )
+    cached = serializers.BooleanField(
+        help_text="Whether result was served from cache"
+    )
+    error = serializers.CharField(
+        required=False,
+        help_text="Error message if translation failed"
+    )
+
+
+class LanguageDetectionRequestSerializer(serializers.Serializer):
+    """Serializer for language detection request"""
+    text = serializers.CharField(
+        required=True,
+        help_text="Text to analyze",
+        max_length=1000
+    )
+
+
+class LanguageDetectionResponseSerializer(serializers.Serializer):
+    """Serializer for language detection response"""
+    detected_language = serializers.CharField(
+        help_text="Detected language code"
+    )
+    language_name = serializers.CharField(
+        help_text="Language name"
+    )
+
+
+class SupportedLanguagesSerializer(serializers.Serializer):
+    """Serializer for supported languages list"""
+    code = serializers.CharField(help_text="Language code")
+    name = serializers.CharField(help_text="Language name")
+
+
+class DemandForecastRequestSerializer(serializers.Serializer):
+    """Serializer for demand forecast request"""
+    item_id = serializers.IntegerField(
+        required=False,
+        help_text="Specific item ID to forecast"
+    )
+    category = serializers.CharField(
+        required=False,
+        help_text="Item category to forecast",
+        max_length=50
+    )
+    hub_id = serializers.IntegerField(
+        required=False,
+        help_text="Hub ID to filter forecast"
+    )
+    days_forward = serializers.IntegerField(
+        required=False,
+        default=30,
+        min_value=1,
+        max_value=90,
+        help_text="Forecast period in days (1-90)"
+    )
+    
+    def validate(self, data):
+        """Ensure at least one filter is provided"""
+        if not any([data.get('item_id'), data.get('category'), data.get('hub_id')]):
+            raise serializers.ValidationError(
+                "At least one of item_id, category, or hub_id must be provided"
+            )
+        return data
+
+
+class DemandForecastResponseSerializer(serializers.Serializer):
+    """Serializer for demand forecast response"""
+    forecast_date = serializers.DateTimeField()
+    forecast_period_days = serializers.IntegerField()
+    historical_data = serializers.DictField()
+    newcomer_adjustment = serializers.DictField()
+    seasonal_adjustment = serializers.DictField(allow_null=True)
+    final_daily_forecast = serializers.FloatField()
+    final_period_forecast = serializers.FloatField()
+    accuracy_score = serializers.FloatField()
+    confidence_level = serializers.CharField()
+
+
+class HighDemandItemSerializer(serializers.Serializer):
+    """Serializer for high demand item"""
+    item_id = serializers.IntegerField()
+    item_name = serializers.CharField()
+    category = serializers.CharField()
+    current_inventory = serializers.IntegerField()
+    forecasted_demand_30days = serializers.FloatField()
+    demand_ratio = serializers.FloatField()
+    forecast_confidence = serializers.CharField()
+    recommendation = serializers.CharField()
+
+
+class HighDemandAlertRequestSerializer(serializers.Serializer):
+    """Serializer for high demand alert request"""
+    hub_id = serializers.IntegerField(
+        required=False,
+        help_text="Hub ID to check"
+    )
+    threshold = serializers.FloatField(
+        required=False,
+        default=0.5,
+        min_value=0.1,
+        max_value=2.0,
+        help_text="Demand/inventory threshold (default 0.5 = 50%)"
+    )

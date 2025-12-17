@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Providers } from '@/components/providers'
-import { Toaster } from '@/components/ui/sonner'
-import { ErrorBoundary } from '@/components/error-boundary'
+import { ClientLayout } from '@/components/client-layout'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,12 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ErrorBoundary>
-          <Providers>
-            {children}
-            <Toaster />
-          </Providers>
-        </ErrorBoundary>
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   )

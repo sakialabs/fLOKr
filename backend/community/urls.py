@@ -5,7 +5,8 @@ from .views import (
     UserBadgeViewSet,
     FeedbackViewSet,
     MentorshipConnectionViewSet,
-    CommunityDataViewSet
+    CommunityDataViewSet,
+    ReputationViewSet
 )
 
 router = DefaultRouter()
@@ -14,7 +15,11 @@ router.register(r'user-badges', UserBadgeViewSet, basename='user-badge')
 router.register(r'feedback', FeedbackViewSet, basename='feedback')
 router.register(r'mentorships', MentorshipConnectionViewSet, basename='mentorship')
 router.register(r'data', CommunityDataViewSet, basename='community-data')
+router.register(r'reputation', ReputationViewSet, basename='reputation')
 
 urlpatterns = [
     path('', include(router.urls)),
+    # Leaderboard endpoint (dignity-first highlights, not rankings)
+    path('leaderboard/', ReputationViewSet.as_view({'get': 'community_highlights'}), name='leaderboard'),
 ]
+

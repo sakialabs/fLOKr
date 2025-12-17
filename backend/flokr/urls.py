@@ -16,6 +16,7 @@ urlpatterns = [
     
     # API endpoints
     path('api/auth/', include('users.urls')),
+    path('api/users/', include('users.urls')),  # Duplicate for /api/users/profile/ endpoint
     path('api/inventory/', include('inventory.urls')),
     path('api/reservations/', include('reservations.urls')),
     path('api/hubs/', include('hubs.urls')),

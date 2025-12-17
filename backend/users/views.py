@@ -17,8 +17,10 @@ from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
+    UserPublicProfileSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
+    PasswordChangeSerializer,
     OnboardingPreferencesSerializer,
 )
 
@@ -81,7 +83,7 @@ class LoginView(APIView):
             
             return Response({
                 'message': 'Login successful',
-                'user': UserProfileSerializer(user).data,
+                'user': UserProfileSerializer(user, context={'request': request}).data,
                 'tokens': {
                     'refresh': str(refresh),
                     'access': str(refresh.access_token),
@@ -139,7 +141,7 @@ class ProfileView(APIView):
     )
     def get(self, request):
         """Get current user profile."""
-        serializer = UserProfileSerializer(request.user)
+        serializer = UserProfileSerializer(request.user, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     @extend_schema(
@@ -155,7 +157,8 @@ class ProfileView(APIView):
         serializer = UserProfileSerializer(
             request.user,
             data=request.data,
-            partial=True
+            partial=True,
+            context={'request': request}
         )
         
         if serializer.is_valid():
@@ -163,6 +166,89 @@ class ProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfilePictureUploadView(APIView):
+    """Profile picture upload endpoint."""
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'profile_picture': {
+                        'type': 'string',
+                        'format': 'binary'
+                    }
+                }
+            }
+        },
+        responses={
+            200: OpenApiResponse(description="Profile picture uploaded successfully"),
+            400: OpenApiResponse(description="Validation error"),
+        },
+        tags=['User Profile']
+    )
+    def post(self, request):
+        """Upload a profile picture."""
+        if 'profile_picture' not in request.FILES:
+            return Response(
+                {'error': 'No profile picture provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        profile_picture = request.FILES['profile_picture']
+        
+        # Validate file size (max 5MB)
+        if profile_picture.size > 5 * 1024 * 1024:
+            return Response(
+                {'error': 'File size must be less than 5MB'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Validate file type
+        allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+        if profile_picture.content_type not in allowed_types:
+            return Response(
+                {'error': 'Only JPEG, PNG, and WebP images are allowed'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Save the profile picture
+        request.user.profile_picture = profile_picture
+        request.user.save()
+        
+        # Build absolute URL
+        profile_picture_url = None
+        if request.user.profile_picture:
+            profile_picture_url = request.build_absolute_uri(request.user.profile_picture.url)
+        
+        return Response({
+            'message': 'Profile picture uploaded successfully',
+            'profile_picture_url': profile_picture_url
+        }, status=status.HTTP_200_OK)
+    
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(description="Profile picture deleted successfully"),
+        },
+        tags=['User Profile']
+    )
+    def delete(self, request):
+        """Delete the profile picture."""
+        if request.user.profile_picture:
+            request.user.profile_picture.delete()
+            request.user.save()
+            return Response(
+                {'message': 'Profile picture deleted successfully'},
+                status=status.HTTP_200_OK
+            )
+        
+        return Response(
+            {'error': 'No profile picture to delete'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class PasswordResetRequestView(APIView):
@@ -254,6 +340,35 @@ class PasswordResetConfirmView(APIView):
                     {'error': 'Invalid token'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    """Password change endpoint for authenticated users."""
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        request=PasswordChangeSerializer,
+        responses={
+            200: OpenApiResponse(description="Password changed successfully"),
+            400: OpenApiResponse(description="Validation error"),
+        },
+        tags=['User Profile']
+    )
+    def post(self, request):
+        """Change user password."""
+        serializer = PasswordChangeSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        
+        if serializer.is_valid():
+            serializer.save()
+            
+            return Response({
+                'message': 'Password changed successfully. Please log in again with your new password.'
+            }, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -387,3 +502,32 @@ class DashboardView(APIView):
         }
         
         return Response(dashboard_data, status=status.HTTP_200_OK)
+
+
+class PublicProfileView(APIView):
+    """
+    Public profile viewing endpoint.
+    Dignity-first profiles: bio, skills, languages, badges, contributions.
+    NO private data (email, phone, address).
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        responses={
+            200: UserPublicProfileSerializer,
+            404: OpenApiResponse(description="User not found"),
+        },
+        tags=['User Profile']
+    )
+    def get(self, request, user_id):
+        """View any user's public profile."""
+        try:
+            user = User.objects.get(id=user_id)
+            serializer = UserPublicProfileSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'User not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+

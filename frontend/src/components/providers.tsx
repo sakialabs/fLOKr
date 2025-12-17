@@ -43,7 +43,14 @@ function AuthHydration({ children }: { children: React.ReactNode }) {
   }, [])
 
   if (!isHydrated) {
-    return null // or a loading spinner
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-sm text-muted-foreground">Loading fLOKr...</p>
+        </div>
+      </div>
+    )
   }
 
   return <>{children}</>
@@ -65,7 +72,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   }, [])
 
   if (!mounted) {
-    return null
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-300 border-t-gray-600"></div>
+      </div>
+    )
   }
 
   return (

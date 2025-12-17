@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -52,6 +53,13 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
   const [isOriChat, setIsOriChat] = useState(false)
   const [friends, setFriends] = useState<Friend[]>([])
   const [isLoadingFriends, setIsLoadingFriends] = useState(true)
+  const [searchResults, setSearchResults] = useState<{
+    users: any[]
+    hubs: any[]
+    items: any[]
+  }>({ users: [], hubs: [], items: [] })
+  const [isSearching, setIsSearching] = useState(false)
+  const [showSearchResults, setShowSearchResults] = useState(false)
 
   // Fetch real users from API
   useEffect(() => {
@@ -81,6 +89,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
     fetchUsers()
   }, [])
 
+  // Filter friends by search query (messages-only search)
   const filteredFriends = friends.filter(friend =>
     `${friend.first_name} ${friend.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -288,7 +297,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
         <div className="p-3">
           <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Messages</h3>
           
-          {/* Search */}
+          {/* Messages Search */}
           <div className="relative mb-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -297,6 +306,14 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* Contacts List */}
@@ -359,35 +376,22 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
                 </div>
 
                 {/* Name & Status */}
-                <div className="flex-1 text-left min-w-0">
+                <Link href={`/profile/${friend.id}`} className="flex-1 text-left min-w-0">
                   <p className="text-sm font-medium truncate">{friend.first_name} {friend.last_name}</p>
                   <p className="text-xs text-muted-foreground capitalize">
                     {friend.connection_status === 'active' ? 'Connected' : friend.status}
                   </p>
-                </div>
+                </Link>
 
-                {/* Action Button */}
-                {friend.connection_status === 'active' ? (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => openChat(Number(friend.id), `${friend.first_name} ${friend.last_name}`, false)}
-                    className="h-7 px-2"
-                  >
-                    <MessageCircle className="h-3.5 w-3.5" />
-                  </Button>
-                ) : friend.connection_status === 'requested' ? (
-                  <span className="text-xs text-muted-foreground px-2">Pending</span>
-                ) : (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => sendConnectionRequest(friend.id)}
-                    className="h-7 px-3 text-xs"
-                  >
-                    Connect
-                  </Button>
-                )}
+                {/* Message Button - Space reserved for message badges */}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => openChat(Number(friend.id), `${friend.first_name} ${friend.last_name}`, false)}
+                  className="h-7 px-2"
+                >
+                  <MessageCircle className="h-3.5 w-3.5" />
+                </Button>
               </motion.div>
             ))
             )}

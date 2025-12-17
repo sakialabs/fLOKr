@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
@@ -22,6 +23,7 @@ interface Newcomer {
 
 interface BadgeAward {
   id: string
+  user_id: string
   user_name: string
   badge: {
     name: string
@@ -52,6 +54,7 @@ interface Announcement {
 
 interface Feedback {
   id: string
+  user_id: string
   user_name: string
   item_name: string
   comment: string
@@ -190,7 +193,9 @@ export default function CommunityPage() {
               {newcomers.map((newcomer) => (
                 <div key={newcomer.id} className="flex items-center justify-between gap-3 p-3 bg-green-500/5 rounded-lg border border-green-500/10 min-w-0">
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium truncate">{newcomer.name}</p>
+                    <Link href={`/profile/${newcomer.id}`} className="font-medium truncate hover:text-primary hover:underline transition-colors">
+                      {newcomer.name}
+                    </Link>
                     <p className="text-xs text-muted-foreground truncate">
                       Joined {newcomer.joined_days_ago} {newcomer.joined_days_ago === 1 ? 'day' : 'days'} ago · {newcomer.hub}
                     </p>
@@ -227,7 +232,9 @@ export default function CommunityPage() {
                   <Award className="h-5 w-5 text-amber-500 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
-                      {award.user_name} earned "{award.badge.name}"
+                      <Link href={`/profile/${award.user_id || award.id}`} className="hover:text-primary hover:underline transition-colors">
+                        {award.user_name}
+                      </Link> earned "{award.badge.name}"
                     </p>
                     <p className="text-xs text-muted-foreground line-clamp-2">{award.badge.description}</p>
                   </div>
@@ -344,7 +351,9 @@ export default function CommunityPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-sm italic line-clamp-3">"{story.comment}"</p>
                       <p className="text-xs text-muted-foreground mt-2 truncate">
-                        — {story.user_name} · {story.item_name}
+                        — <Link href={`/profile/${story.user_id}`} className="hover:text-primary hover:underline transition-colors">
+                          {story.user_name}
+                        </Link> · {story.item_name}
                       </p>
                     </div>
                   </div>

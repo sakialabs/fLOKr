@@ -93,7 +93,99 @@ class FeedbackViewSet(viewsets.ModelViewSet):
         return queryset
     
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        feedback = serializer.save(user=self.request.user)
+        
+        # Process incident reports
+        if feedback.type == 'incident':
+            from .incident_service import IncidentService
+            IncidentService.process_incident_report(feedback)
+        
+        # Award reputation for positive feedback (about someone else)
+        elif feedback.type == 'positive' and feedback.rating and feedback.rating >= 4:
+            # If feedback is about a reservation, award points to the borrower
+            if feedback.reservation and feedback.reservation.user:
+                from .reputation_service import ReputationService
+                ReputationService.award_points(
+                    feedback.reservation.user,
+                    'positive_feedback',
+                    reason=f'Received {feedback.rating}-star feedback'
+                )
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def resolve(self, request, pk=None):
+        """
+        Resolve feedback (stewards/admins only).
+        Requires 'resolution_notes' in request data.
+        """
+        from .incident_service import IncidentService
+        from users.permissions import IsStewardOrAdmin
+        
+        # Check permissions
+        if not (request.user.role in ['steward', 'admin']):
+            return Response(
+                {'error': 'Only stewards and admins can resolve feedback'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        feedback = self.get_object()
+        resolution_notes = request.data.get('resolution_notes', '')
+        
+        if not resolution_notes:
+            return Response(
+                {'error': 'resolution_notes is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        IncidentService.resolve_feedback(feedback, request.user, resolution_notes)
+        
+        serializer = self.get_serializer(feedback)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def pending_incidents(self, request):
+        """
+        Get pending incident reports (stewards/admins only).
+        Filtered by hub for stewards.
+        """
+        from .incident_service import IncidentService
+        
+        if not (request.user.role in ['steward', 'admin']):
+            return Response(
+                {'error': 'Only stewards and admins can view incident reports'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Filter by hub for stewards
+        hub = None
+        if request.user.role == 'steward':
+            hub = request.user.assigned_hub
+        
+        incidents = IncidentService.get_pending_incidents(hub=hub)
+        serializer = self.get_serializer(incidents, many=True)
+        
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def feedback_stats(self, request):
+        """
+        Get feedback statistics (stewards/admins only).
+        Filtered by hub for stewards.
+        """
+        from .incident_service import IncidentService
+        
+        if not (request.user.role in ['steward', 'admin']):
+            return Response(
+                {'error': 'Only stewards and admins can view feedback stats'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        hub = None
+        if request.user.role == 'steward':
+            hub = request.user.assigned_hub
+        
+        stats = IncidentService.get_feedback_stats(hub=hub)
+        
+        return Response(stats)
 
 
 class MentorshipConnectionViewSet(viewsets.ModelViewSet):
@@ -167,6 +259,165 @@ class MentorshipConnectionViewSet(viewsets.ModelViewSet):
         ).exclude(sender=request.user).update(read=True)
         
         return Response({'status': 'messages marked as read'})
+    
+    @action(detail=False, methods=['get'])
+    def find_matches(self, request):
+        """
+        Find potential mentors for the current user.
+        Returns list of mentors with match scores and reasons.
+        """
+        from .mentorship_service import MentorshipMatchingService
+        
+        # Get match limit from query params
+        limit = int(request.query_params.get('limit', 10))
+        
+        # Find potential mentors
+        matches = MentorshipMatchingService.find_potential_mentors(
+            request.user,
+            max_results=limit
+        )
+        
+        # Format response
+        response_data = []
+        for match in matches:
+            mentor = match['mentor']
+            response_data.append({
+                'mentor_id': str(mentor.id),
+                'mentor_name': mentor.get_full_name(),
+                'mentor_email': mentor.email,
+                'hub': mentor.assigned_hub.name if mentor.assigned_hub else None,
+                'language': mentor.preferred_language,
+                'reputation': mentor.reputation_score,
+                'match_score': match['score'],
+                'match_reasons': match['reasons']
+            })
+        
+        return Response({
+            'matches': response_data,
+            'count': len(response_data)
+        })
+    
+    @action(detail=False, methods=['get'])
+    def find_mentors(self, request):
+        """
+        Find mentors by language or interests.
+        Simple search endpoint without scoring.
+        """
+        languages = request.query_params.getlist('languages')
+        interests = request.query_params.getlist('interests')
+        
+        # Find mentors (users with is_mentor=True)
+        mentors = User.objects.filter(is_mentor=True)
+        
+        # Filter by languages if specified
+        if languages:
+            mentors = mentors.filter(
+                Q(preferred_language__in=languages) |
+                Q(languages_spoken__overlap=languages)
+            )
+        
+        # Filter by interests (in preferences JSON field)
+        if interests:
+            mentors = mentors.filter(
+                preferences__skill_interests__overlap=interests
+            )
+        
+        # Use UserProfileSerializer for consistent format
+        from users.serializers import UserPublicProfileSerializer
+        serializer = UserPublicProfileSerializer(mentors[:20], many=True)
+        
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def request_mentor(self, request):
+        """
+        Request a mentorship connection with a specific mentor.
+        Requires 'mentor_id' in request data.
+        """
+        from .mentorship_service import MentorshipMatchingService
+        
+        mentor_id = request.data.get('mentor_id')
+        if not mentor_id:
+            return Response(
+                {'error': 'mentor_id is required'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            connection = MentorshipMatchingService.create_connection(
+                mentor_id=mentor_id,
+                mentee_id=request.user.id
+            )
+            
+            serializer = self.get_serializer(connection)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'Mentor not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    @action(detail=True, methods=['post'])
+    def accept(self, request, pk=None):
+        """
+        Accept a mentorship connection request.
+        Only the mentor can accept.
+        """
+        from .mentorship_service import MentorshipMatchingService
+        
+        try:
+            connection = MentorshipMatchingService.accept_connection(
+                connection_id=pk,
+                mentor_user=request.user
+            )
+            
+            serializer = self.get_serializer(connection)
+            return Response(serializer.data)
+        
+        except MentorshipConnection.DoesNotExist:
+            return Response(
+                {'error': 'Connection not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+    
+    @action(detail=True, methods=['post'])
+    def decline(self, request, pk=None):
+        """
+        Decline a mentorship connection request.
+        Only the mentor can decline.
+        """
+        from .mentorship_service import MentorshipMatchingService
+        
+        try:
+            connection = MentorshipMatchingService.decline_connection(
+                connection_id=pk,
+                mentor_user=request.user
+            )
+            
+            serializer = self.get_serializer(connection)
+            return Response(serializer.data)
+        
+        except MentorshipConnection.DoesNotExist:
+            return Response(
+                {'error': 'Connection not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class CommunityDataViewSet(viewsets.ViewSet):
@@ -241,3 +492,37 @@ class CommunityDataViewSet(viewsets.ViewSet):
             'pending_requests': pending_requests
         })
 
+
+class ReputationViewSet(viewsets.ViewSet):
+    """
+    ViewSet for dignity-first reputation system.
+    Private scores + optional community highlights (no public rankings).
+    """
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=False, methods=['get'])
+    def my_reputation(self, request):
+        """
+        Get current user's personal reputation summary.
+        Private view - only shows their own score.
+        """
+        from .reputation_service import ReputationService
+        
+        summary = ReputationService.get_personal_reputation_summary(request.user)
+        return Response(summary)
+    
+    @action(detail=False, methods=['get'])
+    def community_highlights(self, request):
+        """
+        Get optional community highlights - celebrates contributors without ranking.
+        This is NOT a leaderboard - no numbers, no rankings, just gentle celebration.
+        """
+        from .reputation_service import ReputationService
+        
+        limit = int(request.query_params.get('limit', 10))
+        highlights = ReputationService.get_community_highlights(limit=limit)
+        
+        return Response({
+            'highlights': highlights,
+            'note': 'These are people who have been helping lately. No rankings, just appreciation.'
+        })

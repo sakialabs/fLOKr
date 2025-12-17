@@ -3,17 +3,23 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Select } from '@/components/ui/select'
+import { PhoneNumberInput } from '@/components/ui/phone-input'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { authService, OnboardingPreferences } from '@/lib/auth'
 import { setUser } from '@/store/slices/authSlice'
 import { RootState } from '@/store'
-import { Loader2, Plus, X } from 'lucide-react'
+import { Loader2, Plus, X, User } from 'lucide-react'
 import { toast } from 'sonner'
+import { AvatarSelector } from '@/components/profile/avatar-selector'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { communityService } from '@/lib/api-services'
 
 const DIETARY_OPTIONS = [
   'Vegetarian',
@@ -45,6 +51,27 @@ const SKILL_OPTIONS = [
   'Arts & crafts',
 ]
 
+const CANADIAN_PROVINCES = [
+  { code: 'ON', name: 'Ontario' },
+  { code: 'BC', name: 'British Columbia' },
+  { code: 'AB', name: 'Alberta' },
+  { code: 'QC', name: 'Quebec' },
+  { code: 'NS', name: 'Nova Scotia' },
+  { code: 'NB', name: 'New Brunswick' },
+  { code: 'MB', name: 'Manitoba' },
+  { code: 'PE', name: 'Prince Edward Island' },
+  { code: 'SK', name: 'Saskatchewan' },
+  { code: 'NL', name: 'Newfoundland and Labrador' },
+  { code: 'YT', name: 'Yukon' },
+  { code: 'NT', name: 'Northwest Territories' },
+  { code: 'NU', name: 'Nunavut' },
+]
+
+const COUNTRIES = [
+  { code: 'CA', name: 'Canada' },
+  { code: 'US', name: 'United States' },
+]
+
 export function OnboardingForm() {
   const router = useRouter()
   const dispatch = useDispatch()
@@ -52,6 +79,9 @@ export function OnboardingForm() {
   
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [uploadingPicture, setUploadingPicture] = useState(false)
+  const [selectedAvatar, setSelectedAvatar] = useState<string>('')
+  const [customUpload, setCustomUpload] = useState<File | null>(null)
   const [preferences, setPreferences] = useState<OnboardingPreferences>({
     dietary_restrictions: [],
     immediate_needs: [],
@@ -59,6 +89,12 @@ export function OnboardingForm() {
     interests: [],
     languages_spoken: [],
     seeking_mentor: false,
+    phone: '',
+    address_country: 'CA',
+    address_province: 'ON',
+    address_street: '',
+    address_city: '',
+    address_postal_code: '',
   })
 
   const updatePreference = (key: keyof OnboardingPreferences, value: any) => {
@@ -73,9 +109,39 @@ export function OnboardingForm() {
     updatePreference(key, newArray)
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      toast.error('Please upload a JPEG, PNG, or WebP image')
+      return
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB')
+      return
+    }
+
+    setCustomUpload(file)
+    setSelectedAvatar('') // Clear avatar selection if uploading custom
+  }
+
   const handleSubmit = async () => {
     setLoading(true)
     try {
+      // Upload profile picture if selected
+      if (customUpload) {
+        try {
+          await communityService.uploadProfilePicture(customUpload)
+          toast.success('Profile picture uploaded!')
+        } catch (error) {
+          toast.error('Failed to upload profile picture, but continuing...')
+        }
+      }
+
       const updatedUser = await authService.saveOnboardingPreferences(preferences)
       dispatch(setUser(updatedUser))
       toast.success('Welcome to fLOKr! Your profile is all set.')
@@ -112,18 +178,92 @@ export function OnboardingForm() {
           </div>
         )}
 
+        <div className="space-y-4">
+          <Label>Your address</Label>
+          <p className="text-sm text-muted-foreground -mt-2">
+            📍 We'll connect you with your nearest community hub and local mentors
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="address_country">Country</Label>
+              <Select
+                id="address_country"
+                value={preferences.address_country || 'CA'}
+                onValueChange={(value) => updatePreference('address_country', value)}
+                required
+              >
+                <option value="">Select country</option>
+                {COUNTRIES.map((country) => (
+                  <option key={country.code} value={country.code}>
+                    {country.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="address_province">Province</Label>
+              <Select
+                id="address_province"
+                value={preferences.address_province || 'ON'}
+                onValueChange={(value) => updatePreference('address_province', value)}
+                required
+              >
+                <option value="">Select province</option>
+                {CANADIAN_PROVINCES.map((province) => (
+                  <option key={province.code} value={province.code}>
+                    {province.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="address_street">Street Address</Label>
+            <Input
+              id="address_street"
+              placeholder="123 Main Street, Apt 4B"
+              value={preferences.address_street || ''}
+              onChange={(e) => updatePreference('address_street', e.target.value)}
+              required
+            />
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="address_city">City</Label>
+              <Input
+                id="address_city"
+                placeholder="Hamilton"
+                value={preferences.address_city || ''}
+                onChange={(e) => updatePreference('address_city', e.target.value)}
+                required
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="address_postal_code">Postal Code</Label>
+              <Input
+                id="address_postal_code"
+                placeholder="L8P 4R5"
+                value={preferences.address_postal_code || ''}
+                onChange={(e) => updatePreference('address_postal_code', e.target.value)}
+                required
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-2">
-          <Label htmlFor="address">Your address</Label>
-          <Textarea
-            id="address"
-            placeholder="123 Main St, Hamilton, ON L8P 4R5"
-            value={preferences.address || ''}
-            onChange={(e) => updatePreference('address', e.target.value)}
-            rows={2}
-            required
+          <Label htmlFor="phone">Phone Number</Label>
+          <PhoneNumberInput
+            value={preferences.phone || ''}
+            onChange={(value) => updatePreference('phone', value || '')}
           />
           <p className="text-sm text-muted-foreground">
-            📍 We'll connect you with your nearest community hub and local mentors
+            📱 We'll use this to notify you about hub events and urgent updates
           </p>
         </div>
 
@@ -154,6 +294,86 @@ export function OnboardingForm() {
   )
 
   const renderStep2 = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle>Add a profile picture</CardTitle>
+        <CardDescription>
+          Help others recognize you in the community (you can skip this step)
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        {/* Preview */}
+        <div className="flex justify-center">
+          <Avatar className="h-32 w-32">
+            {customUpload ? (
+              <AvatarImage src={URL.createObjectURL(customUpload)} alt="Preview" />
+            ) : selectedAvatar ? (
+              <AvatarImage src={selectedAvatar} alt="Selected avatar" />
+            ) : (
+              <AvatarFallback className="bg-primary/10 text-4xl">
+                <User className="h-16 w-16 text-muted-foreground" />
+              </AvatarFallback>
+            )}
+          </Avatar>
+        </div>
+
+        {/* Upload Option */}
+        <div className="space-y-2">
+          <Label htmlFor="picture_upload">Upload your own photo</Label>
+          <div className="flex items-center gap-3">
+            <Input
+              id="picture_upload"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFileChange}
+              className="cursor-pointer"
+            />
+            {customUpload && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCustomUpload(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            JPEG, PNG, or WebP (max 5MB)
+          </p>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Or choose an avatar</span>
+          </div>
+        </div>
+
+        {/* Avatar Selector */}
+        <AvatarSelector
+          selectedAvatar={selectedAvatar}
+          onSelect={(avatar) => {
+            setSelectedAvatar(avatar)
+            setCustomUpload(null) // Clear custom upload if selecting avatar
+          }}
+        />
+
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
+            Back
+          </Button>
+          <Button onClick={() => setStep(3)} className="flex-1">
+            Continue
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
+  const renderStep3 = () => (
     <Card>
       <CardHeader>
         <CardTitle>What do you need right now?</CardTitle>
@@ -249,10 +469,10 @@ export function OnboardingForm() {
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
+          <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
             Back
           </Button>
-          <Button onClick={() => setStep(3)} className="flex-1">
+          <Button onClick={() => setStep(4)} className="flex-1">
             Continue
           </Button>
         </div>
@@ -260,17 +480,17 @@ export function OnboardingForm() {
     </Card>
   )
 
-  const renderStep3 = () => (
+  const renderStep4 = () => (
     <Card>
       <CardHeader>
-        <CardTitle>Connect with your community</CardTitle>
+        <CardTitle>Join the community</CardTitle>
         <CardDescription>
-          Share your skills and interests to find mentors and make connections
+          Connect with others and share your skills
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label>Skills you'd like to learn or share</Label>
+          <Label>Skills you'd like to share</Label>
           <div className="flex flex-wrap gap-2">
             {SKILL_OPTIONS.map((skill) => (
               <Badge
@@ -285,24 +505,25 @@ export function OnboardingForm() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="seeking_mentor">Would you like a mentor?</Label>
-          <div className="flex items-center space-x-2">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Looking for a mentor?</Label>
+              <p className="text-sm text-muted-foreground">
+                We'll match you with experienced community members
+              </p>
+            </div>
             <input
               type="checkbox"
-              id="seeking_mentor"
-              checked={preferences.seeking_mentor}
+              checked={preferences.seeking_mentor || false}
               onChange={(e) => updatePreference('seeking_mentor', e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300"
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <label htmlFor="seeking_mentor" className="text-sm text-muted-foreground">
-              Yes, connect me with a local mentor who can help me navigate my new city
-            </label>
           </div>
         </div>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
+          <Button variant="outline" onClick={() => setStep(3)} className="flex-1">
             Back
           </Button>
           <Button onClick={handleSubmit} disabled={loading} className="flex-1">
@@ -312,7 +533,7 @@ export function OnboardingForm() {
                 Saving...
               </>
             ) : (
-              'Complete Setup'
+              'Complete'
             )}
           </Button>
         </div>
@@ -324,7 +545,7 @@ export function OnboardingForm() {
     <div className="space-y-6">
       {/* Progress indicator */}
       <div className="flex items-center justify-center gap-2">
-        {[1, 2, 3].map((s) => (
+        {[1, 2, 3, 4].map((s) => (
           <div
             key={s}
             className={`h-2 w-16 rounded-full transition-colors ${
@@ -338,6 +559,7 @@ export function OnboardingForm() {
       {step === 1 && renderStep1()}
       {step === 2 && renderStep2()}
       {step === 3 && renderStep3()}
+      {step === 4 && renderStep4()}
 
       {/* Skip option */}
       <div className="text-center">

@@ -57,6 +57,13 @@ class User(AbstractUser):
     late_return_count = models.IntegerField(default=0)
     borrowing_restricted_until = models.DateTimeField(null=True, blank=True)
     
+    # Profile fields for dignity-first profiles
+    bio = models.TextField(blank=True, help_text="Short introduction (max 500 chars)")
+    skills = models.JSONField(default=list, blank=True, help_text="Skills user can teach or share")
+    languages_spoken = models.JSONField(default=list, blank=True, help_text="Languages the user speaks")
+    profile_picture = models.ImageField(upload_to='profiles/', blank=True, null=True, help_text="User profile picture")
+    avatar_choice = models.CharField(max_length=50, blank=True, null=True, help_text="Selected avatar from predefined options (e.g., avatar1, avatar2)")
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Optimize chunk loading
+  experimental: {
+    optimizePackageImports: ['@/components', '@/lib'],
+  },
   async rewrites() {
     return [
       {
@@ -28,6 +32,12 @@ const nextConfig: NextConfig = {
         fs: false,
         net: false,
         tls: false,
+      }
+      
+      // Improve chunk loading reliability
+      config.output = {
+        ...config.output,
+        crossOriginLoading: 'anonymous',
       }
     }
     return config
