@@ -2,7 +2,127 @@
 
 All notable changes to the fLOKr platform will be documented in this file.
 
-## [Unreleased]
+## [0.0.4] - 2025-12-20
+
+### 🚀 New Features
+
+#### Phase 4: Mentorship, Messaging, and Partner Systems (Tasks 24-27)
+
+**Task 24: Mentorship Matching System**
+
+- MentorshipConnection model with status tracking (requested, active, completed, declined)
+- Intelligent mentor matching algorithm based on:
+  - Hub proximity (same hub +30 points, nearby +20 points)
+  - Language matching (same language +25 points)
+  - Common interests (+5 points each, max 20)
+  - Mentor experience/reputation (+0-15 points)
+  - Role alignment bonuses
+- Mentor search endpoints (find_matches, find_mentors)
+- Mentorship request creation and management
+- Accept/decline functionality for mentors
+- Mentor capacity checking (max 5 active mentorships)
+- Match score calculation and reasoning
+- Integration with user profiles (is_mentor flag)
+
+**Task 25: In-app Messaging System**
+
+- Message model with connection, sender, content fields
+- Message sending endpoint with validation
+- Conversation history retrieval with pagination
+- Auto-translation support for cross-language communication
+  - Detects sender and recipient languages
+  - Automatically translates messages on send
+  - Stores translations in JSON field
+  - Returns content in user's preferred language
+- Message read/unread tracking
+- Mark messages as read endpoint
+- Unread message count endpoint
+- Notification integration for new messages
+- Message deletion (sender only)
+- Connection summary with message stats
+
+**Task 26: Partner Account Management**
+
+- Partner model with subscription tiers (Basic, Premium, Enterprise)
+- Subscription tier validation and constraints:
+  - Basic: 2 sponsored categories
+  - Premium: 5 sponsored categories
+  - Enterprise: Unlimited sponsored categories
+- Partner CRUD endpoints with admin permissions
+- Subscription status management (active, expired, suspended)
+- Automatic status calculation based on subscription dates
+- Subscription renewal endpoint
+- Suspend/activate partner endpoints
+- Expiring subscriptions list (30-day warning)
+- Partner analytics endpoint (Premium/Enterprise only):
+  - Category demand tracking
+  - Privacy-safe aggregated data
+  - Weekly and monthly trends
+  - Unique hub count
+  - Top performing categories
+- Celery tasks for automation:
+  - Daily subscription expiration check (midnight)
+  - Renewal reminders (7-day and 30-day warnings at 8 AM)
+  - Cleanup of expired partner data (monthly)
+
+**Task 27: Sponsored Content System**
+
+- Sponsored category tracking in Partner model
+- Sponsored content injection in inventory search
+- Partner branding metadata in item listings
+- Active partner filtering
+- Sponsored content display logic:
+  - Only shows for active subscriptions
+  - Matches categories to search results
+  - Provides partner information
+  - Respects tier limitations
+- Automatic sponsored content removal on expiration
+- Privacy-safe analytics for sponsored categories
+- Integration with inventory search endpoint
+
+### 🔧 Technical Improvements
+
+- Added `IsAdminOrReadOnly` permission class
+- Enhanced MessageService with translation support
+- Created comprehensive partner serializers with validation
+- Integrated sponsored content with inventory views
+- Added Celery Beat schedule for partner tasks
+- Improved error handling in messaging endpoints
+- Added conversation history formatting
+
+### 📝 API Endpoints Added
+
+**Mentorship Endpoints:**
+
+- `GET /api/community/mentorship-connections/` - List connections
+- `POST /api/community/mentorship-connections/request_mentor/` - Request mentor
+- `POST /api/community/mentorship-connections/{id}/accept/` - Accept request
+- `POST /api/community/mentorship-connections/{id}/decline/` - Decline request
+- `GET /api/community/mentorship-connections/find_matches/` - Find mentor matches
+- `GET /api/community/mentorship-connections/find_mentors/` - Search mentors
+- `POST /api/community/mentorship-connections/{id}/send_message/` - Send message
+- `GET /api/community/mentorship-connections/{id}/messages/` - Get conversation
+- `POST /api/community/mentorship-connections/{id}/mark_messages_read/` - Mark read
+- `GET /api/community/mentorship-connections/unread_count/` - Get unread count
+
+**Partner Endpoints:**
+
+- `GET /api/partners/partners/` - List partners
+- `POST /api/partners/partners/` - Create partner (admin)
+- `GET /api/partners/partners/{id}/` - Get partner details
+- `PUT /api/partners/partners/{id}/` - Update partner (admin)
+- `DELETE /api/partners/partners/{id}/` - Delete partner (admin)
+- `GET /api/partners/partners/active_partners/` - Get active partners
+- `GET /api/partners/partners/sponsored_categories/` - Get sponsored categories
+- `POST /api/partners/partners/{id}/renew/` - Renew subscription (admin)
+- `POST /api/partners/partners/{id}/suspend/` - Suspend subscription (admin)
+- `POST /api/partners/partners/{id}/activate/` - Activate subscription (admin)
+- `GET /api/partners/partners/{id}/analytics/` - Get partner analytics
+- `GET /api/partners/partners/expiring_soon/` - Get expiring subscriptions (admin)
+
+**Enhanced Inventory Endpoint:**
+
+- `GET /api/inventory/items/search/?include_sponsored=true` - Search with sponsored content
 
 ### ✅ Completed
 
@@ -301,8 +421,9 @@ Run verification: `scripts\checkpoint.bat` (Windows) or `./scripts/checkpoint.sh
 
 ## Version History
 
-- **Current** - All core features complete (Tasks 1-24, 52-59)
-- **0.1.0** (2025-12-15) - Core backend complete (Tasks 1-8)
+- **0.0.4** (2025-12-20) - Mentorship and Messaging features complete (Tasks 24-26)
+- **0.0.3** (2025-12-18) - All core features complete (Tasks 9-24, 52-59)
+- **0.0.2** (2025-12-15) - Core backend complete (Tasks 1-8)
 - **0.0.1** (2025-12-12) - Initial project setup
 
 ---

@@ -61,6 +61,7 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
             OpenApiParameter('hub_id', str, description='Filter by hub ID'),
             OpenApiParameter('available_only', bool, description='Show only available items'),
             OpenApiParameter('prioritize_user_hub', bool, description='Prioritize items from user\'s assigned hub'),
+            OpenApiParameter('include_sponsored', bool, description='Include sponsored content metadata'),
         ]
     )
     @action(detail=False, methods=['get'])
@@ -68,6 +69,7 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
         """
         Advanced search with filters and hub-prioritized ranking.
         Items from user's assigned hub appear first.
+        Includes sponsored content metadata for relevant categories.
         """
         from django.db.models import Case, When, Value, IntegerField
         
@@ -105,7 +107,60 @@ class InventoryItemViewSet(viewsets.ModelViewSet):
             ).order_by('hub_priority', '-created_at')
         
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        
+        # Add sponsored content metadata if requested
+        include_sponsored = request.query_params.get('include_sponsored', 'true').lower() == 'true'
+        response_data = serializer.data
+        
+        if include_sponsored:
+            sponsored_info = self._get_sponsored_content_info(queryset)
+            return Response({
+                'items': response_data,
+                'sponsored_content': sponsored_info
+            })
+        
+        return Response(response_data)
+    
+    def _get_sponsored_content_info(self, queryset):
+        """
+        Get sponsored content information for displayed items.
+        Returns partner info for sponsored categories present in results.
+        """
+        from partners.models import Partner
+        from django.utils import timezone
+        
+        # Get unique categories from queryset
+        categories = set(queryset.values_list('category', flat=True).distinct())
+        
+        if not categories:
+            return []
+        
+        # Get active partners with sponsored categories matching results
+        today = timezone.now().date()
+        active_partners = Partner.objects.filter(
+            status='active',
+            subscription_start__lte=today,
+            subscription_end__gte=today
+        )
+        
+        sponsored_content = []
+        for partner in active_partners:
+            if not partner.sponsored_categories:
+                continue
+            
+            # Check if any sponsored categories match our results
+            matching_categories = set(partner.sponsored_categories).intersection(categories)
+            
+            if matching_categories:
+                sponsored_content.append({
+                    'partner_id': str(partner.id),
+                    'partner_name': partner.organization_name,
+                    'sponsored_categories': list(matching_categories),
+                    'subscription_tier': partner.subscription_tier,
+                    'message': f"Learn more about {', '.join(matching_categories)} from {partner.organization_name}"
+                })
+        
+        return sponsored_content
     
     @action(detail=True, methods=['post'])
     def mark_inactive(self, request, pk=None):

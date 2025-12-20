@@ -381,7 +381,7 @@
   - Ensure all tests pass, ask the user if questions arise.
   - 6/7 tests passing in Docker (PyTorch working), migrations applied
 
-- [ ] 24. Mentorship matching system
+- [x] 24. Mentorship matching system
   - Create MentorshipConnection model with status tracking
   - Implement mentor matching algorithm based on language, interests, location
   - Create mentorship request endpoints
@@ -401,7 +401,7 @@
   - **Property 44: Mentorship connection activation**
   - **Validates: Requirements 12.2**
 
-- [ ] 25. In-app messaging system
+- [x] 25. In-app messaging system
   - Create Message model with connection, sender, content fields
   - Implement message sending endpoint
   - Create message history retrieval endpoint
@@ -420,7 +420,7 @@
   - Test read status updates
   - _Requirements: 12.3_
 
-- [ ] 26. Partner account management
+- [x] 26. Partner account management
   - Create Partner model with subscription tier and dates
   - Implement partner registration and account creation
   - Add subscription tier validation
@@ -436,7 +436,7 @@
   - **Property 50: Subscription expiration enforcement**
   - **Validates: Requirements 11.5**
 
-- [ ] 27. Sponsored content system
+- [x] 27. Sponsored content system
   - Add sponsored category tracking to Partner model
   - Implement sponsored content display logic
   - Create partner branding injection in item listings

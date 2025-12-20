@@ -222,7 +222,9 @@ class MentorshipConnectionViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def send_message(self, request, pk=None):
-        """Send a message in a mentorship connection"""
+        """Send a message in a mentorship connection with auto-translation"""
+        from .message_service import MessageService
+        
         connection = self.get_object()
         
         # Verify user is part of this connection
@@ -239,26 +241,95 @@ class MentorshipConnectionViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        message = Message.objects.create(
-            connection=connection,
-            sender=request.user,
-            content=content
-        )
+        try:
+            # Create message with auto-translation
+            message = MessageService.create_message(
+                connection=connection,
+                sender=request.user,
+                content=content
+            )
+            
+            # Return message with translation info
+            user_lang = request.user.preferred_language or 'en'
+            response_data = {
+                'id': str(message.id),
+                'content': content,
+                'translated_content': message.translated_content,
+                'created_at': message.created_at.isoformat(),
+                'sender_id': str(request.user.id),
+                'connection_id': str(connection.id)
+            }
+            
+            return Response(response_data, status=status.HTTP_201_CREATED)
         
-        serializer = MessageSerializer(message)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(
+                {'error': f'Failed to send message: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
     
     @action(detail=True, methods=['post'])
     def mark_messages_read(self, request, pk=None):
         """Mark all messages in a connection as read"""
+        from .message_service import MessageService
+        
         connection = self.get_object()
         
-        # Mark messages sent by the other person as read
-        Message.objects.filter(
-            connection=connection
-        ).exclude(sender=request.user).update(read=True)
+        # Verify user is part of this connection
+        if request.user not in [connection.mentor, connection.mentee]:
+            return Response(
+                {'error': 'You are not part of this mentorship connection'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Mark messages as read
+        MessageService.mark_messages_read(connection, request.user)
         
         return Response({'status': 'messages marked as read'})
+    
+    @action(detail=True, methods=['get'])
+    def messages(self, request, pk=None):
+        """
+        Get conversation history with auto-translated content.
+        Messages are returned in the user's preferred language.
+        """
+        from .message_service import MessageService
+        
+        connection = self.get_object()
+        
+        # Verify user is part of this connection
+        if request.user not in [connection.mentor, connection.mentee]:
+            return Response(
+                {'error': 'You are not part of this mentorship connection'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Get message limit from query params
+        limit = int(request.query_params.get('limit', 50))
+        
+        # Get conversation history with translations
+        messages = MessageService.get_conversation_history(
+            connection=connection,
+            requesting_user=request.user,
+            limit=limit
+        )
+        
+        return Response({
+            'connection_id': str(connection.id),
+            'message_count': len(messages),
+            'messages': messages
+        })
+    
+    @action(detail=False, methods=['get'])
+    def unread_count(self, request):
+        """Get count of unread messages for current user"""
+        from .message_service import MessageService
+        
+        unread = MessageService.get_unread_count(request.user)
+        
+        return Response({
+            'unread_count': unread
+        })
     
     @action(detail=False, methods=['get'])
     def find_matches(self, request):

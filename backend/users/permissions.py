@@ -44,3 +44,19 @@ class IsPartnerUser(permissions.BasePermission):
     
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.role == 'partner'
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to allow admins to edit, everyone else read-only.
+    """
+    
+    def has_permission(self, request, view):
+        # Read permissions allowed to any authenticated user
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        
+        # Write permissions only for admins
+        return request.user and request.user.is_authenticated and (
+            request.user.role == 'admin' or request.user.is_staff or request.user.is_superuser
+        )

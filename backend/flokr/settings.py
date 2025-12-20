@@ -258,6 +258,30 @@ CELERY_BEAT_SCHEDULE = {
             'expires': 7200,  # 2 hours
         }
     },
+    # Expire partner subscriptions daily at midnight
+    'expire-partner-subscriptions': {
+        'task': 'partners.tasks.expire_partner_subscriptions',
+        'schedule': crontab(hour=0, minute=0),  # Midnight daily
+        'options': {
+            'expires': 3600,
+        }
+    },
+    # Send partner renewal reminders daily at 8 AM
+    'send-expiration-reminders': {
+        'task': 'partners.tasks.send_expiration_reminders',
+        'schedule': crontab(hour=8, minute=0),  # 8:00 AM daily
+        'options': {
+            'expires': 3600,
+        }
+    },
+    # Cleanup expired partner data monthly on 1st at 3 AM
+    'cleanup-expired-partner-data': {
+        'task': 'partners.tasks.cleanup_expired_partner_data',
+        'schedule': crontab(hour=3, minute=0, day_of_month=1),  # 1st of month 3:00 AM
+        'options': {
+            'expires': 7200,
+        }
+    },
 }
 
 # Celery Task Configuration
