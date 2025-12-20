@@ -1,4 +1,4 @@
-# fLOKr Platform
+# 🪿 fLOKr Platform
 
 A digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items while connecting with local mentors and community hubs.
 
@@ -12,8 +12,6 @@ scripts\docker.bat start  # Windows
 # Visit http://localhost:8000/api/docs/
 # Login: admin@flokr.com / admin123
 ```
-
-See [DOCKER.md](DOCKER.md) for full Docker commands.
 
 ## Project Structure
 
