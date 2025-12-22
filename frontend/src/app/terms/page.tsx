@@ -39,7 +39,7 @@ export default function TermsOfServicePage() {
                   <Users className="h-6 w-6 text-primary" />
                   <h2 className="text-2xl font-semibold m-0">Community Values</h2>
                 </div>
-                <p className="text-muted-foreground mb-3">We're building a space of dignity and mutual respect. You agree to:</p>
+                <p className="text-muted-foreground mb-3">We&apos;re building a space of dignity and mutual respect. You agree to:</p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Treat Everyone with Respect:</strong> No discrimination, harassment, or abuse based on race, religion, nationality, gender, or any other characteristic</li>
                   <li><strong>Be Honest:</strong> Provide accurate information in your profile and listings</li>
@@ -71,7 +71,7 @@ export default function TermsOfServicePage() {
               <div>
                 <div className="flex items-center gap-3 mb-4">
                   <AlertCircle className="h-6 w-6 text-primary" />
-                  <h2 className="text-2xl font-semibold m-0">What's Not Allowed</h2>
+                  <h2 className="text-2xl font-semibold m-0">What&apos;s Not Allowed</h2>
                 </div>
                 <p className="text-muted-foreground mb-3">To protect our community, these actions may result in suspension or removal:</p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
@@ -86,29 +86,29 @@ export default function TermsOfServicePage() {
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Your Account</h2>
                 <p className="text-muted-foreground">
-                  You're responsible for keeping your account secure. Don't share your password, and notify us immediately if you suspect unauthorized access. You can delete your account anytime through settings—we'll miss you, but we respect your choice.
+                  You&apos;re responsible for keeping your account secure. Don&apos;t share your password, and notify us immediately if you suspect unauthorized access. You can delete your account anytime through settings—we&apos;ll miss you, but we respect your choice.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Disclaimers & Liability</h2>
                 <p className="text-muted-foreground mb-3">
-                  fLOKr connects people with resources, but we don't own or verify all items. While we strive to maintain a safe platform:
+                  fLOKr connects people with resources, but we don&apos;t own or verify all items. While we strive to maintain a safe platform:
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                  <li>We're not responsible for disputes between users or damage/loss of items during transfers</li>
-                  <li>Ori provides helpful guidance, but it's not a substitute for professional advice (legal, medical, financial, etc.)</li>
+                  <li>We&apos;re not responsible for disputes between users or damage/loss of items during transfers</li>
+                  <li>Ori provides helpful guidance, but it&apos;s not a substitute for professional advice (legal, medical, financial, etc.)</li>
                   <li>We make no guarantees about item availability or platform uptime</li>
                 </ul>
                 <p className="text-muted-foreground mt-3">
-                  Use the platform at your own risk. We're here to help, not to replace your judgment.
+                  Use the platform at your own risk. We&apos;re here to help, not to replace your judgment.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Changes to These Terms</h2>
                 <p className="text-muted-foreground">
-                  We may update these terms to improve clarity or reflect new features. We'll notify you of significant changes, and continued use means you accept the updates.
+                  We may update these terms to improve clarity or reflect new features. We&apos;ll notify you of significant changes, and continued use means you accept the updates.
                 </p>
               </div>
 

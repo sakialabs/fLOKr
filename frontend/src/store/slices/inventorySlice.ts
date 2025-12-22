@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { InventoryItem } from '@/lib/api-services'
 
 interface InventoryState {
-  items: any[]
+  items: InventoryItem[]
   loading: boolean
   error: string | null
 }
@@ -16,7 +17,7 @@ const inventorySlice = createSlice({
   name: 'inventory',
   initialState,
   reducers: {
-    setItems: (state, action: PayloadAction<any[]>) => {
+    setItems: (state, action: PayloadAction<InventoryItem[]>) => {
       state.items = action.payload
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

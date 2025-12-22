@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Card, CardFooter, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { InventoryItem } from '@/lib/api-services'

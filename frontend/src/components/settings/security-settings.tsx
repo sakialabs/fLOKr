@@ -66,7 +66,7 @@ export function SecuritySettings() {
         throw new Error(error.detail || 'Failed to change password')
       }
 
-      const data = await response.json()
+      await response.json()
       
       toast.success('Password changed successfully! Please log in again.')
       
@@ -84,8 +84,9 @@ export function SecuritySettings() {
       //   window.location.href = '/login'
       // }, 2000)
 
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to change password')
+    } catch (error) {
+      const err = error as Error
+      toast.error(err.message || 'Failed to change password')
     } finally {
       setLoading(false)
     }
@@ -215,7 +216,7 @@ export function SecuritySettings() {
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <div className="flex items-start gap-2">
             <div className="mt-0.5">•</div>
-            <p>Use a unique password that you don't use anywhere else</p>
+            <p>Use a unique password that you don&apos;t use anywhere else</p>
           </div>
           <div className="flex items-start gap-2">
             <div className="mt-0.5">•</div>
@@ -227,7 +228,7 @@ export function SecuritySettings() {
           </div>
           <div className="flex items-start gap-2">
             <div className="mt-0.5">•</div>
-            <p>Don't share your password with anyone</p>
+            <p>Don&apos;t share your password with anyone</p>
           </div>
           <div className="flex items-start gap-2">
             <div className="mt-0.5">•</div>

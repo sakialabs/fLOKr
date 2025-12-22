@@ -56,9 +56,10 @@ export function ReserveItemDialog({ item, open, onOpenChange, onReserve }: Reser
       
       toast.success('Reservation created successfully!')
       onReserve()
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to create reservation:', error)
-      toast.error(error.response?.data?.message || 'Failed to create reservation')
+      const err = error as { response?: { data?: { message?: string } } }
+      toast.error(err.response?.data?.message || 'Failed to create reservation')
     } finally {
       setLoading(false)
     }

@@ -18,7 +18,6 @@ export function ImageUploadWithTags({
   onImageSelected,
   maxSize = 5
 }: ImageUploadWithTagsProps) {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [suggestedTags, setSuggestedTags] = useState<string[]>([])
@@ -40,7 +39,6 @@ export function ImageUploadWithTags({
     }
 
     setError(null)
-    setSelectedImage(file)
     onImageSelected?.(file)
 
     // Create preview
@@ -58,7 +56,7 @@ export function ImageUploadWithTags({
       setSuggestedCategory(result.category)
       setDetailedTags(result.detailed_tags)
       onTagsSuggested?.(result.tags, result.category)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to analyze image:', err)
       setError('Failed to analyze image. You can still add tags manually.')
     } finally {
@@ -86,7 +84,6 @@ export function ImageUploadWithTags({
   }
 
   const clearImage = () => {
-    setSelectedImage(null)
     setImagePreview(null)
     setSuggestedTags([])
     setSuggestedCategory('')
@@ -124,11 +121,14 @@ export function ImageUploadWithTags({
         <Card>
           <CardContent className="p-4">
             <div className="relative">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-64 object-cover rounded-lg"
-              />
+              <div className="w-full h-64 relative rounded-lg overflow-hidden">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <Button
                 variant="destructive"
                 size="icon"

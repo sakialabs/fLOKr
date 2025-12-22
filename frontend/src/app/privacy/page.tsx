@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
                   <h2 className="text-2xl font-semibold m-0">Our Commitment</h2>
                 </div>
                 <p className="text-muted-foreground">
-                  fLOKr exists to empower refugees and newcomers with dignity. We collect only what's necessary to serve you, never sell your data, and treat your information with the respect you deserve. Your privacy is not just policy—it's principle.
+                  fLOKr exists to empower refugees and newcomers with dignity. We collect only what&apos;s necessary to serve you, never sell your data, and treat your information with the respect you deserve. Your privacy is not just policy—it&apos;s principle.
                 </p>
               </div>
 
@@ -88,7 +88,7 @@ export default function PrivacyPolicyPage() {
               </div>
 
               <div>
-                <h2 className="text-2xl font-semibold mb-4">Children's Privacy</h2>
+                <h2 className="text-2xl font-semibold mb-4">Children&apos;s Privacy</h2>
                 <p className="text-muted-foreground">
                   fLOKr is intended for users 16 and older. We do not knowingly collect information from children under 16. If you believe a child has created an account, please contact us immediately.
                 </p>

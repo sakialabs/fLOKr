@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { 
   ChevronRight, 
@@ -25,7 +24,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ChatBubble } from './chat-bubble'
 import { WelcomeModal } from './welcome-modal'
 import { OfferItemModal } from './offer-item-modal'
-import { toast } from 'sonner'
 import { api } from '@/lib/api'
 
 interface RightSidebarProps {
@@ -46,20 +44,12 @@ interface Friend {
 }
 
 export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSidebarProps) {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState('')
   const [activeChatId, setActiveChatId] = useState<number | null>(null)
   const [activeChatName, setActiveChatName] = useState<string>('')
   const [isOriChat, setIsOriChat] = useState(false)
   const [friends, setFriends] = useState<Friend[]>([])
   const [isLoadingFriends, setIsLoadingFriends] = useState(true)
-  const [searchResults, setSearchResults] = useState<{
-    users: any[]
-    hubs: any[]
-    items: any[]
-  }>({ users: [], hubs: [], items: [] })
-  const [isSearching, setIsSearching] = useState(false)
-  const [showSearchResults, setShowSearchResults] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Fetch real users from API
   useEffect(() => {
@@ -69,7 +59,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
         const response = await api.get('/community/data/newcomers/')
         const users = Array.isArray(response.data) ? response.data : response.data.results || []
         // Map users to friends format with random online status
-        const mappedFriends = users.slice(0, 5).map((user: any) => ({
+        const mappedFriends = users.slice(0, 5).map((user: { id: string; name?: string; email?: string }) => ({
           id: user.id,
           first_name: user.name?.split(' ')[0] || 'User',
           last_name: user.name?.split(' ').slice(1).join(' ') || '',
@@ -104,21 +94,6 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
     setActiveChatId(null)
     setActiveChatName('')
     setIsOriChat(false)
-  }
-
-  const sendConnectionRequest = async (userId: string) => {
-    try {
-      await api.post('/community/mentorships/', {
-        mentee: userId
-      })
-      toast.success('Connection request sent!')
-      // Update the friend's connection status locally
-      setFriends(prev => prev.map(f => 
-        f.id === userId ? { ...f, connection_status: 'requested' } : f
-      ))
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to send connection request')
-    }
   }
 
   const [showOfferModal, setShowOfferModal] = useState(false)

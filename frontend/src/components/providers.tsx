@@ -28,7 +28,7 @@ function AuthHydration({ children }: { children: React.ReactNode }) {
               refreshToken,
             })
           )
-        } catch (error) {
+        } catch {
           // Token invalid, clear them
           tokenManager.clearTokens()
           store.dispatch(setLoading(false))

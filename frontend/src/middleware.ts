@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+export function middleware() {
   // Note: Middleware runs on the server and can't access localStorage
   // We'll handle auth checks on the client side instead
-  const { pathname } = request.nextUrl
 
   // Just allow all routes - auth will be handled client-side
   return NextResponse.next()

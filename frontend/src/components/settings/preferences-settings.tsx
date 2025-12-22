@@ -14,11 +14,14 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
-import { Globe, Moon, Sun, Loader2 } from 'lucide-react'
+import { Globe, Sun, Loader2 } from 'lucide-react'
 import { setUser } from '@/store/slices/authSlice'
 
 interface PreferencesSettingsProps {
-  user: any
+  user: {
+    preferred_language?: string
+    is_mentor?: boolean
+  }
 }
 
 export function PreferencesSettings({ user }: PreferencesSettingsProps) {
@@ -76,8 +79,9 @@ export function PreferencesSettings({ user }: PreferencesSettingsProps) {
       dispatch(setUser(updatedUser))
       
       toast.success('Preferences updated successfully!')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update preferences')
+    } catch (error) {
+      const err = error as Error
+      toast.error(err.message || 'Failed to update preferences')
     } finally {
       setLoading(false)
     }

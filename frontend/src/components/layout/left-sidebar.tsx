@@ -20,8 +20,6 @@ import {
   Shield,
   BarChart3,
   ClipboardCheck,
-  MessageCircle,
-  Award,
   Sparkles,
   MessageSquare,
 } from 'lucide-react'

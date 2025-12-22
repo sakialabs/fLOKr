@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { DismissibleCard } from '@/components/ui/dismissible-card'
@@ -32,13 +32,6 @@ export default function MentorshipPage() {
       router.push('/login')
     }
   }, [isAuthenticated, authLoading, router])
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchData()
-    }
-  }, [isAuthenticated])
-
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -84,6 +77,12 @@ export default function MentorshipPage() {
       setRequesting(null)
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchData()
+    }
+  }, [isAuthenticated])
 
   const handleAccept = async (connectionId: string) => {
     try {
@@ -140,7 +139,6 @@ export default function MentorshipPage() {
   const safeConnections = Array.isArray(myConnections) ? myConnections : []
   const pendingRequests = safeConnections.filter(c => c.status === 'requested')
   const activeConnections = safeConnections.filter(c => c.status === 'active')
-  const completedConnections = safeConnections.filter(c => c.status === 'completed')
 
   return (
     <AppLayout>

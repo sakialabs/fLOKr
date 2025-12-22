@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { useDispatch } from 'react-redux'
-import { Camera, Trash2, Upload, Smile } from 'lucide-react'
+import { Trash2, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -55,7 +55,7 @@ export function ProfilePictureUpload({ currentPictureUrl, userName, onUploadSucc
     setUploading(true)
 
     try {
-      const result = await communityService.uploadProfilePicture(file)
+      await communityService.uploadProfilePicture(file)
       
       // Clear avatar_choice so uploaded photo takes precedence
       const token = localStorage.getItem('access_token')
@@ -86,8 +86,9 @@ export function ProfilePictureUpload({ currentPictureUrl, userName, onUploadSucc
       
       toast.success('Profile picture uploaded successfully!')
       setSelectedTab('current')
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to upload profile picture')
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } }
+      toast.error(err.response?.data?.error || 'Failed to upload profile picture')
     } finally {
       setUploading(false)
     }
@@ -120,7 +121,7 @@ export function ProfilePictureUpload({ currentPictureUrl, userName, onUploadSucc
       
       // Update Redux state
       dispatch(setUser(userData))
-    } catch (error) {
+    } catch {
       toast.error('Failed to save avatar')
     } finally {
       setUploading(false)
@@ -165,7 +166,7 @@ export function ProfilePictureUpload({ currentPictureUrl, userName, onUploadSucc
       setPictureUrl(undefined)
       toast.success('Profile picture removed')
       onUploadSuccess?.('')
-    } catch (error) {
+    } catch {
       toast.error('Failed to remove profile picture')
     } finally {
       setUploading(false)

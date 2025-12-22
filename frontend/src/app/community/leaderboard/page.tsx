@@ -8,7 +8,6 @@ import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DismissibleCard } from '@/components/ui/dismissible-card'
 import { communityService } from '@/lib/api-services'
@@ -17,13 +16,34 @@ import { Sparkles, Heart, HandHeart, Users, Info } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 
+interface Highlight {
+  id: string
+  name: string
+  user_id?: string
+  gentle_note?: string
+  [key: string]: unknown
+}
+
+interface BadgeAward {
+  id: string
+  user_name: string
+  user_id?: string
+  awarded_at?: string
+  badge: {
+    name: string
+    description: string
+    icon?: string
+  }
+  [key: string]: unknown
+}
+
 export default function LeaderboardPage() {
-  const router = useRouter()
+  const [highlights, setHighlights] = useState<Highlight[]>([])
+  const [recentAwards, setRecentAwards] = useState<BadgeAward[]>([])
   const { toast } = useToast()
   const { isAuthenticated, loading: authLoading } = useSelector((state: RootState) => state.auth)
-  const [highlights, setHighlights] = useState<any[]>([])
-  const [recentAwards, setRecentAwards] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -31,18 +51,13 @@ export default function LeaderboardPage() {
     }
   }, [isAuthenticated, authLoading, router])
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchLeaderboard()
-    }
-  }, [isAuthenticated])
-
   const fetchLeaderboard = async () => {
     try {
       setLoading(true)
       const data = await communityService.getLeaderboard()
       // Backend returns { highlights: [...], note: '...' }
-      const highlightsData = (data as any)?.highlights || data || []
+      const response = data as unknown as Record<string, unknown>
+      const highlightsData = response?.highlights || data || []
       setHighlights(Array.isArray(highlightsData) ? highlightsData : [])
       
       // Fetch recent badge awards
@@ -66,6 +81,12 @@ export default function LeaderboardPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchLeaderboard()
+    }
+  }, [isAuthenticated])
 
   if (authLoading || !isAuthenticated || loading) {
     return (
@@ -92,7 +113,7 @@ export default function LeaderboardPage() {
             Community Highlights
           </h1>
           <p className="text-muted-foreground mt-2">
-            Celebrating our community's kindness, generosity, and mutual support
+            Celebrating our community&apos;s kindness, generosity, and mutual support
           </p>
         </div>
 
@@ -253,7 +274,7 @@ export default function LeaderboardPage() {
                       </p>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(award.awarded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {award.awarded_at ? new Date(award.awarded_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently'}
                     </p>
                   </motion.div>
                 ))

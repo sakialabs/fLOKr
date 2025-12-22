@@ -40,9 +40,9 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<{
-    users: any[]
-    hubs: any[]
-    items: any[]
+    users: Array<{ id: string; name: string }>
+    hubs: Array<{ id: number; name: string; location: string }>
+    items: Array<{ id: string; title: string; category: string }>
   }>({ users: [], hubs: [], items: [] })
   const searchRef = useRef<HTMLDivElement>(null)
 
@@ -93,7 +93,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
         // Search users
         const usersResponse = await api.get('/community/data/newcomers/')
         const allUsers = Array.isArray(usersResponse.data) ? usersResponse.data : usersResponse.data.results || []
-        const matchedUsers = allUsers.filter((user: any) => 
+        const matchedUsers = allUsers.filter((user: { name?: string }) => 
           user.name?.toLowerCase().includes(searchQuery.toLowerCase())
         ).slice(0, 5)
 
@@ -152,13 +152,6 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
     }
   }
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/items?search=${encodeURIComponent(searchQuery.trim())}`)
-    }
-  }
-
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Left Sidebar - Navigation */}
@@ -203,7 +196,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
                             {searchResults.users.length > 0 && (
                               <div className="mb-2">
                                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Users</div>
-                                {searchResults.users.map((user: any) => (
+                                {searchResults.users.map((user) => (
                                   <button
                                     key={user.id}
                                     onClick={() => handleResultClick('user', user.id)}
@@ -219,7 +212,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
                             {searchResults.hubs.length > 0 && (
                               <div className="mb-2">
                                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Hubs</div>
-                                {searchResults.hubs.map((hub: any) => (
+                                {searchResults.hubs.map((hub) => (
                                   <button
                                     key={hub.id}
                                     onClick={() => handleResultClick('hub', hub.id)}
@@ -238,7 +231,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
                             {searchResults.items.length > 0 && (
                               <div>
                                 <div className="px-2 py-1 text-xs font-semibold text-muted-foreground">Items</div>
-                                {searchResults.items.map((item: any) => (
+                                {searchResults.items.map((item) => (
                                   <button
                                     key={item.id}
                                     onClick={() => handleResultClick('item', item.id)}

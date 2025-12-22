@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -39,21 +39,16 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     }
   }, [isAuthenticated, authLoading, router])
 
-  useEffect(() => {
-    if (isAuthenticated && resolvedParams.id) {
-      fetchProfile()
-    }
-  }, [isAuthenticated, resolvedParams.id])
-
   const fetchProfile = async () => {
     try {
       setLoading(true)
       setError(null)
       const data = await communityService.getUserProfile(resolvedParams.id)
       setProfile(data)
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to fetch profile:', err)
-      setError(err.response?.data?.error || 'Failed to load profile')
+      const error = err as { response?: { data?: { error?: string } } }
+      setError(error.response?.data?.error || 'Failed to load profile')
       toast({
         title: 'Error',
         description: 'Failed to load profile',
@@ -63,6 +58,12 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && resolvedParams.id) {
+      fetchProfile()
+    }
+  }, [isAuthenticated, resolvedParams.id])
 
   const getInitials = (name: string) => {
     return name

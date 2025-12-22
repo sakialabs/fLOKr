@@ -17,7 +17,7 @@ export default function ContactPage() {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
             <p className="text-lg text-muted-foreground">
-              We're here to help you thrive in your new community.
+              We&apos;re here to help you thrive in your new community.
             </p>
           </div>
 
@@ -26,7 +26,7 @@ export default function ContactPage() {
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
                 <p className="text-muted-foreground mb-6">
-                  fLOKr exists to empower refugees and newcomers with dignity and community support. Whether you need help, have questions, or want to contribute to our mission, we'd love to hear from you.
+                  fLOKr exists to empower refugees and newcomers with dignity and community support. Whether you need help, have questions, or want to contribute to our mission, we&apos;d love to hear from you.
                 </p>
               </div>
 
@@ -67,7 +67,7 @@ export default function ContactPage() {
 
               <div className="pt-6 border-t">
                 <p className="text-sm text-muted-foreground">
-                  Together, we build communities where everyone belongs. Your voice matters, and we're committed to supporting your journey with respect and care.
+                  Together, we build communities where everyone belongs. Your voice matters, and we&apos;re committed to supporting your journey with respect and care.
                 </p>
               </div>
             </div>

@@ -153,7 +153,7 @@ export function OfferItemModal({ isOpen, onClose }: OfferItemModalProps) {
                         ].map((cond) => (
                           <button
                             key={cond.value}
-                            onClick={() => setCondition(cond.value as any)}
+                            onClick={() => setCondition(cond.value as 'excellent' | 'good' | 'fair')}
                             className={`p-2.5 rounded-lg border text-sm transition-colors ${
                               condition === cond.value
                                 ? 'border-primary bg-primary/5 text-foreground'

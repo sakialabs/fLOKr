@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Loader2, Sparkles, HelpCircle, Package, MapPin, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
 import { OriAvatar } from '@/components/ui/ori-avatar'
 import { oriAIService, QuestionResponse } from '@/lib/ori-ai'
 

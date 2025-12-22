@@ -3,11 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux'
-import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
 import { PhoneNumberInput } from '@/components/ui/phone-input'
 import { Badge } from '@/components/ui/badge'
@@ -15,7 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { authService, OnboardingPreferences } from '@/lib/auth'
 import { setUser } from '@/store/slices/authSlice'
 import { RootState } from '@/store'
-import { Loader2, Plus, X, User } from 'lucide-react'
+import { Loader2, X, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { AvatarSelector } from '@/components/profile/avatar-selector'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -79,7 +77,6 @@ export function OnboardingForm() {
   
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [uploadingPicture, setUploadingPicture] = useState(false)
   const [selectedAvatar, setSelectedAvatar] = useState<string>('')
   const [customUpload, setCustomUpload] = useState<File | null>(null)
   const [preferences, setPreferences] = useState<OnboardingPreferences>({
@@ -137,7 +134,7 @@ export function OnboardingForm() {
         try {
           await communityService.uploadProfilePicture(customUpload)
           toast.success('Profile picture uploaded!')
-        } catch (error) {
+        } catch {
           toast.error('Failed to upload profile picture, but continuing...')
         }
       }
@@ -146,7 +143,7 @@ export function OnboardingForm() {
       dispatch(setUser(updatedUser))
       toast.success('Welcome to fLOKr! Your profile is all set.')
       router.push('/dashboard')
-    } catch (error: any) {
+    } catch {
       toast.error('Failed to save preferences. Please try again.')
     } finally {
       setLoading(false)
@@ -181,14 +178,13 @@ export function OnboardingForm() {
         <div className="space-y-4">
           <Label>Your address</Label>
           <p className="text-sm text-muted-foreground -mt-2">
-            📍 We'll connect you with your nearest community hub and local mentors
+            📍 We&apos;ll connect you with your nearest community hub and local mentors
           </p>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="address_country">Country</Label>
               <Select
-                id="address_country"
                 value={preferences.address_country || 'CA'}
                 onValueChange={(value) => updatePreference('address_country', value)}
                 required
@@ -205,7 +201,6 @@ export function OnboardingForm() {
             <div className="space-y-2">
               <Label htmlFor="address_province">Province</Label>
               <Select
-                id="address_province"
                 value={preferences.address_province || 'ON'}
                 onValueChange={(value) => updatePreference('address_province', value)}
                 required
@@ -263,7 +258,7 @@ export function OnboardingForm() {
             onChange={(value) => updatePreference('phone', value || '')}
           />
           <p className="text-sm text-muted-foreground">
-            📱 We'll use this to notify you about hub events and urgent updates
+            📱 We&apos;ll use this to notify you about hub events and urgent updates
           </p>
         </div>
 
@@ -378,7 +373,7 @@ export function OnboardingForm() {
       <CardHeader>
         <CardTitle>What do you need right now?</CardTitle>
         <CardDescription>
-          Select items you need most urgently - we'll help you find them
+          Select items you need most urgently - we&apos;ll help you find them
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -490,7 +485,7 @@ export function OnboardingForm() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label>Skills you'd like to share</Label>
+          <Label>Skills you&apos;d like to share</Label>
           <div className="flex flex-wrap gap-2">
             {SKILL_OPTIONS.map((skill) => (
               <Badge
@@ -510,7 +505,7 @@ export function OnboardingForm() {
             <div className="space-y-0.5">
               <Label>Looking for a mentor?</Label>
               <p className="text-sm text-muted-foreground">
-                We'll match you with experienced community members
+                We&apos;ll match you with experienced community members
               </p>
             </div>
             <input

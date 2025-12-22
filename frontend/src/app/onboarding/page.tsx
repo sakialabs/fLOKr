@@ -22,7 +22,7 @@ export default function OnboardingPage() {
             Welcome to fLOKr
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
-            Let's personalize your experience
+            Let&apos;s personalize your experience
           </p>
         </motion.div>
         <OnboardingForm />

@@ -129,7 +129,7 @@ export function RegisterForm() {
 
     try {
       // Remove optional fields that will be collected during onboarding
-      const { arrival_date, phone, ...registrationData } = formData
+      const { ...registrationData } = formData
       const response = await authService.register(registrationData)
       
       // Store tokens
@@ -154,21 +154,22 @@ export function RegisterForm() {
       setTimeout(() => {
         router.push('/onboarding')
       }, 1000)
-    } catch (err: any) {
-      console.error('❌ Registration error:', err)
+    } catch (err) {
+      const error = err as { response?: { data?: Record<string, unknown>; status?: number } }
+      console.error('❌ Registration error:', error)
       console.error('Error details:', {
-        response: err.response,
-        data: err.response?.data,
-        status: err.response?.status
+        response: error.response,
+        data: error.response?.data,
+        status: error.response?.status
       })
       
-      const errorData = err.response?.data
+      const errorData = error.response?.data
       
       if (errorData) {
         // Parse backend errors
         const parsedErrors: Record<string, string> = {}
         let errorMessage = 'Registration failed. Please check the form.'
-        let errorDetails: string[] = []
+        const errorDetails: string[] = []
         
         // Handle different error formats from backend
         if (typeof errorData === 'object') {
@@ -297,7 +298,6 @@ export function RegisterForm() {
         <div className="space-y-2">
           <Label htmlFor="role">I am a...</Label>
           <Select
-            id="role"
             value={formData.role}
             onValueChange={(value) => handleChange('role', value)}
             disabled={loading}
@@ -319,7 +319,7 @@ export function RegisterForm() {
             disabled={loading}
           />
           <p className="text-xs text-muted-foreground">
-            We'll use this to connect you with your nearest community hub and local mentors
+            We&apos;ll use this to connect you with your nearest community hub and local mentors
           </p>
           {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
         </div>

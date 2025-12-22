@@ -13,7 +13,18 @@ import { ProfilePictureUpload } from '@/components/profile/profile-picture-uploa
 import { setUser } from '@/store/slices/authSlice'
 
 interface PersonalInfoSettingsProps {
-  user: any
+  user: {
+    email?: string
+    profile_picture?: string
+    avatar_choice?: string
+    first_name?: string
+    last_name?: string
+    phone?: string
+    bio?: string
+    address?: string
+    skills?: string[]
+    languages_spoken?: string[]
+  }
 }
 
 export function PersonalInfoSettings({ user }: PersonalInfoSettingsProps) {
@@ -70,8 +81,9 @@ export function PersonalInfoSettings({ user }: PersonalInfoSettingsProps) {
       dispatch(setUser(updatedUser))
       
       toast.success('Profile updated successfully!')
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile')
+    } catch (error) {
+      const err = error as Error
+      toast.error(err.message || 'Failed to update profile')
     } finally {
       setLoading(false)
     }

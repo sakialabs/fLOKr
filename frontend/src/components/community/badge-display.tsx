@@ -1,7 +1,6 @@
 'use client'
 
 import { Badge as BadgeType, UserBadge } from '@/lib/api-services'
-import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { motion } from 'framer-motion'
 import { Lock } from 'lucide-react'
@@ -40,12 +39,12 @@ export function BadgeDisplay({ userBadges, allBadges = [], showLocked = true }: 
         <div key={category} className="space-y-3">
           <h3 className="text-lg font-semibold">{categories[category as keyof typeof categories] || category}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {badges.map((userBadge, index) => (
+            {badges.map((userBadge) => (
               <motion.div
                 key={userBadge.id}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.05 }}
+                transition={{ delay: 0 }}
               >
                 <Card 
                   className="group cursor-pointer hover:shadow-lg transition-all duration-200"
@@ -62,7 +61,7 @@ export function BadgeDisplay({ userBadges, allBadges = [], showLocked = true }: 
                     <p className="text-xs text-muted-foreground mb-2">{userBadge.badge.description}</p>
                     {userBadge.awarded_reason && (
                       <p className="text-xs italic text-primary/80 mt-2 border-t pt-2">
-                        "{userBadge.awarded_reason}"
+                        &quot;{userBadge.awarded_reason}&quot;
                       </p>
                     )}
                     <div className="text-xs text-muted-foreground mt-2">
@@ -84,7 +83,7 @@ export function BadgeDisplay({ userBadges, allBadges = [], showLocked = true }: 
         <div className="space-y-3">
           <h3 className="text-lg font-semibold text-muted-foreground">Coming Soon</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {lockedBadges.slice(0, 8).map((badge, index) => (
+            {lockedBadges.slice(0, 8).map((badge) => (
               <Card key={badge.id} className="opacity-50">
                 <CardContent className="p-4 text-center">
                   <div className="text-4xl mb-2 filter grayscale">

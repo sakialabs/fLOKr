@@ -8,8 +8,16 @@ import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Calendar, Package, Sparkles, AlertCircle, CheckCircle, Clock } from 'lucide-react'
+import { Calendar, Package, Sparkles, AlertCircle, Clock } from 'lucide-react'
 import { api } from '@/lib/api'
+
+interface Reservation {
+  id: string
+  item: {
+    name: string
+  }
+  expected_return_date: string
+}
 
 interface DashboardData {
   summary: {
@@ -20,10 +28,10 @@ interface DashboardData {
     total_borrowed: number
     on_time_returns: number
   }
-  active_reservations: any[]
-  upcoming_returns: any[]
-  pending_reservations: any[]
-  overdue_items: any[]
+  active_reservations: Reservation[]
+  upcoming_returns: Reservation[]
+  pending_reservations: Reservation[]
+  overdue_items: Reservation[]
 }
 
 interface OriSuggestion {
@@ -39,7 +47,7 @@ interface OriSuggestion {
 
 export default function HomePage() {
   const router = useRouter()
-  const { isAuthenticated, loading, user } = useSelector((state: RootState) => state.auth)
+  const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
   const [oriSuggestions, setOriSuggestions] = useState<OriSuggestion[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -81,7 +89,16 @@ export default function HomePage() {
     return null
   }
 
-  const { summary } = dashboardData || { summary: {} }
+  const { summary } = dashboardData || { 
+    summary: {
+      upcoming_returns_count: 0,
+      overdue_count: 0,
+      ready_for_pickup_count: 0,
+      active_reservations_count: 0,
+      total_borrowed: 0,
+      on_time_returns: 0
+    }
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -179,10 +196,10 @@ export default function HomePage() {
         {dashboardData?.active_reservations && dashboardData.active_reservations.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Items I'm Borrowing</CardTitle>
+              <CardTitle className="text-lg">Items I&apos;m Borrowing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {dashboardData.active_reservations.map((reservation: any) => (
+              {dashboardData.active_reservations.map((reservation) => (
                 <div key={reservation.id} className="flex items-center justify-between gap-3 p-3 bg-muted/50 rounded-lg min-w-0">
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Package className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -207,7 +224,7 @@ export default function HomePage() {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#D97A5B] to-[#C26A52] flex items-center justify-center flex-shrink-0">
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
-                <CardTitle className="text-lg truncate">Ori's Suggestions for You</CardTitle>
+                <CardTitle className="text-lg truncate">Ori&apos;s Suggestions for You</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -218,7 +235,7 @@ export default function HomePage() {
                       <p className="font-medium truncate">{suggestion.item.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5 truncate">{suggestion.item.category}</p>
                       {suggestion.reasons && suggestion.reasons[0] && (
-                        <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2">"{suggestion.reasons[0]}"</p>
+                        <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2">&quot;{suggestion.reasons[0]}&quot;</p>
                       )}
                     </div>
                     <Button size="sm" className="flex-shrink-0">Reserve</Button>

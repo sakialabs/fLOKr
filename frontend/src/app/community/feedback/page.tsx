@@ -22,7 +22,6 @@ export default function FeedbackPage() {
   const { toast } = useToast()
   const { isAuthenticated, loading: authLoading } = useSelector((state: RootState) => state.auth)
   const [feedbackHistory, setFeedbackHistory] = useState<Feedback[]>([])
-  const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   // Form states

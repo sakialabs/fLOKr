@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Reservation } from '@/lib/api-services'
 
 interface ReservationState {
-  reservations: any[]
+  reservations: Reservation[]
   loading: boolean
   error: string | null
 }
@@ -16,7 +17,7 @@ const reservationSlice = createSlice({
   name: 'reservations',
   initialState,
   reducers: {
-    setReservations: (state, action: PayloadAction<any[]>) => {
+    setReservations: (state, action: PayloadAction<Reservation[]>) => {
       state.reservations = action.payload
     },
     setLoading: (state, action: PayloadAction<boolean>) => {

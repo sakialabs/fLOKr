@@ -47,10 +47,11 @@ export function LoginForm() {
       setTimeout(() => {
         router.push('/home')
       }, 100)
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { data?: { non_field_errors?: string[]; detail?: string } } }
       const errorMessage =
-        err.response?.data?.non_field_errors?.[0] ||
-        err.response?.data?.detail ||
+        error.response?.data?.non_field_errors?.[0] ||
+        error.response?.data?.detail ||
         'Invalid email or password'
       setLocalError(errorMessage)
       dispatch(setError(errorMessage))
@@ -135,7 +136,7 @@ export function LoginForm() {
         </Button>
 
         <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-primary hover:underline font-medium">
             Create one
           </Link>

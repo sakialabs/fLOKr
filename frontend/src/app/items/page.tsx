@@ -40,16 +40,6 @@ export default function ItemsPage() {
     }
   }, [isAuthenticated, authLoading, router])
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchItems()
-    }
-  }, [isAuthenticated])
-
-  useEffect(() => {
-    filterAndSortItems()
-  }, [items, searchQuery, selectedCategory, selectedCondition, sortBy])
-
   const fetchItems = async () => {
     try {
       setLoading(true)
@@ -109,6 +99,16 @@ export default function ItemsPage() {
 
     setFilteredItems(filtered)
   }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchItems()
+    }
+  }, [isAuthenticated])
+
+  useEffect(() => {
+    filterAndSortItems()
+  }, [items, searchQuery, selectedCategory, selectedCondition, sortBy])
 
   const clearFilters = () => {
     setSearchQuery('')

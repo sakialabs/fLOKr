@@ -11,7 +11,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import { Home } from 'lucide-react'
 
 const routeNames: Record<string, string> = {
   home: 'Home',

@@ -61,7 +61,7 @@ const mockFeedData: FeedItem[] = [
   },
 ]
 
-const feedTypeConfig: Record<FeedItemType, { icon: any; color: string; bg: string }> = {
+const feedTypeConfig: Record<FeedItemType, { icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
   item: { icon: Package, color: 'text-blue-500', bg: 'bg-blue-500/10' },
   welcome: { icon: Users, color: 'text-green-500', bg: 'bg-green-500/10' },
   event: { icon: Calendar, color: 'text-purple-500', bg: 'bg-purple-500/10' },
@@ -115,7 +115,7 @@ export function CommunityFeed({ showHeader = true, defaultFilter = 'all', hideMy
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Community Space</h1>
             <p className="text-muted-foreground">
-              What's happening across your hub
+              What&apos;s happening across your hub
             </p>
           </div>
         </div>

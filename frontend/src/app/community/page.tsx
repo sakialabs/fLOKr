@@ -83,8 +83,9 @@ export default function CommunityPage() {
         mentee: userId
       })
       toast.success('Connection request sent!')
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to send connection request')
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } }
+      toast.error(err.response?.data?.error || 'Failed to send connection request')
       setConnectingUsers(prev => {
         const newSet = new Set(prev)
         newSet.delete(userId)
@@ -173,7 +174,7 @@ export default function CommunityPage() {
         <motion.div variants={itemVariants}>
           <h1 className="text-3xl font-bold tracking-tight">Community Space</h1>
           <p className="text-muted-foreground">
-            What's happening across our community
+            What&apos;s happening across our community
           </p>
         </motion.div>
 
@@ -234,7 +235,7 @@ export default function CommunityPage() {
                     <p className="text-sm font-medium truncate">
                       <Link href={`/profile/${award.user_id || award.id}`} className="hover:text-primary hover:underline transition-colors">
                         {award.user_name}
-                      </Link> earned "{award.badge.name}"
+                      </Link> earned &quot;{award.badge.name}&quot;
                     </p>
                     <p className="text-xs text-muted-foreground line-clamp-2">{award.badge.description}</p>
                   </div>
@@ -349,7 +350,7 @@ export default function CommunityPage() {
                   <div className="flex items-start gap-3 min-w-0">
                     <Heart className="h-5 w-5 text-pink-500 flex-shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm italic line-clamp-3">"{story.comment}"</p>
+                      <p className="text-sm italic line-clamp-3">&quot;{story.comment}&quot;</p>
                       <p className="text-xs text-muted-foreground mt-2 truncate">
                         — <Link href={`/profile/${story.user_id}`} className="hover:text-primary hover:underline transition-colors">
                           {story.user_name}

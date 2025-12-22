@@ -6,12 +6,12 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { MapPin, Users, Package, Clock, Navigation, Search, Star, Phone, Mail } from 'lucide-react'
+import { MapPin, Users, Package, Clock, Navigation, Search, Star } from 'lucide-react'
 import { hubService, Hub } from '@/lib/api-services'
 
 export default function HubsPage() {
@@ -224,7 +224,7 @@ export default function HubsPage() {
                     <MapPin className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
                     <h3 className="font-semibold mb-2">No Hub Assigned</h3>
                     <p className="text-muted-foreground mb-4">
-                      You haven't been assigned to a hub yet. Browse available hubs and contact an administrator.
+                      You haven&apos;t been assigned to a hub yet. Browse available hubs and contact an administrator.
                     </p>
                     <Button onClick={() => setSelectedTab('all-hubs')}>
                       Browse All Hubs

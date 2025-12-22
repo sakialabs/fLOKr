@@ -32,12 +32,6 @@ export default function ItemDetailPage() {
     }
   }, [isAuthenticated, authLoading, router])
 
-  useEffect(() => {
-    if (isAuthenticated && params.id) {
-      fetchItem()
-    }
-  }, [isAuthenticated, params.id])
-
   const fetchItem = async () => {
     try {
       setLoading(true)
@@ -49,6 +43,12 @@ export default function ItemDetailPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (isAuthenticated && params.id) {
+      fetchItem()
+    }
+  }, [isAuthenticated, params.id])
 
   if (authLoading || !isAuthenticated) {
     return null
@@ -81,7 +81,7 @@ export default function ItemDetailPage() {
           <Package className="h-16 w-16 text-muted-foreground/30 mb-4" />
           <h3 className="text-lg font-semibold mb-2">Item not found</h3>
           <p className="text-muted-foreground mb-4">
-            The item you're looking for doesn't exist or has been removed.
+            The item you&apos;re looking for doesn&apos;t exist or has been removed.
           </p>
           <Button asChild>
             <Link href="/items">
