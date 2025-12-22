@@ -1,19 +1,30 @@
 'use client'
 
-import { Scale, Heart, Users, Package, AlertCircle } from 'lucide-react'
+import { Scale, Heart, Users, Package, AlertCircle, ArrowLeft } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { AppHeader } from '@/components/layout/app-header'
+import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <div className="max-w-4xl mx-auto px-4 py-16">
+    <div className="min-h-screen bg-background">
+      <AppHeader />
+      <div className="max-w-4xl mx-auto px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
+          <Button asChild variant="ghost" size="sm" className="mb-6">
+            <Link href="/">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Platform
+            </Link>
+          </Button>
+          
           <div className="text-center mb-12">
             <Scale className="h-16 w-16 text-primary mx-auto mb-4" />
             <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
@@ -130,7 +141,6 @@ export default function TermsOfServicePage() {
             </Button>
           </div>
         </motion.div>
-      </div>
-    </div>
+      </div>      <Footer />    </div>
   )
 }

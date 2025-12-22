@@ -4,10 +4,13 @@ import { Mail, MessageCircle, Users } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
+import { AppHeader } from '@/components/layout/app-header'
+import { Footer } from '@/components/layout/footer'
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
+      <AppHeader />
       <div className="max-w-3xl mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -82,7 +85,6 @@ export default function ContactPage() {
             </Button>
           </div>
         </motion.div>
-      </div>
-    </div>
+      </div>      <Footer />    </div>
   )
 }

@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
+import { AppHeader } from '@/components/layout/app-header'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar, Package, Sparkles, AlertCircle, Clock } from 'lucide-react'
@@ -120,13 +121,15 @@ export default function HomePage() {
   }
 
   return (
-    <AppLayout>
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="space-y-6"
-      >
+    <>
+      <AppHeader isAuthenticated />
+      <AppLayout>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="space-y-6"
+        >
         {/* Personal Header */}
         <motion.div variants={itemVariants}>
           <h1 className="text-2xl font-bold mb-1">My Home</h1>
@@ -279,6 +282,7 @@ export default function HomePage() {
         </Card>
         </motion.div>
       </motion.div>
-    </AppLayout>
+      </AppLayout>
+    </>
   )
 }

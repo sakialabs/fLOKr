@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/ui/logo'
+import { AppHeader } from '@/components/layout/app-header'
+import { Footer } from '@/components/layout/footer'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
@@ -53,6 +55,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <AppHeader />
       {/* Hero Section */}
       <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-background to-muted/20 p-4">
         <motion.div
@@ -153,11 +156,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t py-6 px-4">
-        <div className="max-w-4xl mx-auto text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} fLOKr. Supporting newcomers through community resource sharing.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
