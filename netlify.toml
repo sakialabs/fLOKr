@@ -4,6 +4,10 @@
   command = "npm run build"
   publish = ".next"
 
+# Environment variables (set your backend URL in Netlify UI or here)
+[build.environment]
+  NEXT_PUBLIC_API_URL = "https://your-backend-url.com"
+
 # Enable Next.js Runtime on Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"
