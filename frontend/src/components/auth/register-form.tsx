@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Select } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { authService, tokenManager, RegisterData } from '@/lib/auth'
 import { setCredentials, setLoading, setError } from '@/store/slices/authSlice'
 import { validatePassword, PasswordStrength } from '@/lib/password-strength'
@@ -302,8 +302,13 @@ export function RegisterForm() {
             onValueChange={(value) => handleChange('role', value)}
             disabled={loading}
           >
-            <option value="newcomer">Newcomer (seeking resources)</option>
-            <option value="community_member">Community Member (offering support)</option>
+            <SelectTrigger>
+              <SelectValue placeholder="Select your role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newcomer">Newcomer (seeking resources)</SelectItem>
+              <SelectItem value="community_member">Community Member (offering support)</SelectItem>
+            </SelectContent>
           </Select>
         </div>
 
