@@ -29,7 +29,7 @@ import { api } from '@/lib/api'
 interface RightSidebarProps {
   collapsed: boolean
   onToggle: () => void
-  shouldOpenOriChat?: boolean
+  shouldOpenNaviChat?: boolean
 }
 
 interface Friend {
@@ -43,10 +43,10 @@ interface Friend {
   connection_id?: number
 }
 
-export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSidebarProps) {
+export function RightSidebar({ collapsed, onToggle, shouldOpenNaviChat }: RightSidebarProps) {
   const [activeChatId, setActiveChatId] = useState<number | null>(null)
   const [activeChatName, setActiveChatName] = useState<string>('')
-  const [isOriChat, setIsOriChat] = useState(false)
+  const [isNaviChat, setIsNaviChat] = useState(false)
   const [friends, setFriends] = useState<Friend[]>([])
   const [isLoadingFriends, setIsLoadingFriends] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
@@ -84,16 +84,16 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
     `${friend.first_name} ${friend.last_name}`.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  const openChat = (id: number, name: string, isOri: boolean = false) => {
+  const openChat = (id: number, name: string, isNavi: boolean = false) => {
     setActiveChatId(id)
     setActiveChatName(name)
-    setIsOriChat(isOri)
+    setIsNaviChat(isNavi)
   }
 
   const closeChat = () => {
     setActiveChatId(null)
     setActiveChatName('')
-    setIsOriChat(false)
+    setIsNaviChat(false)
   }
 
   const [showOfferModal, setShowOfferModal] = useState(false)
@@ -107,12 +107,12 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
     setShowWelcomeModal(true)
   }
 
-  // Handle opening Ori chat from external trigger
+  // Handle opening Navi chat from external trigger
   useEffect(() => {
-    if (shouldOpenOriChat) {
-      openChat(999, 'Ori', true)
+    if (shouldOpenNaviChat) {
+      openChat(999, 'Navi', true)
     }
-  }, [shouldOpenOriChat])
+  }, [shouldOpenNaviChat])
 
   if (collapsed) {
     return (
@@ -151,7 +151,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
             <div className="flex items-center justify-center w-10 h-10">
               <Users className="h-5 w-5 text-muted-foreground" />
             </div>
-            <span className="text-[10px] text-muted-foreground text-center">Pulse</span>
+            <span className="text-[10px] text-muted-foreground text-center">Loop</span>
           </button>
           
           <button 
@@ -161,7 +161,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
             <div className="flex items-center justify-center w-10 h-10">
               <Gift className="h-5 w-5 text-muted-foreground" />
             </div>
-            <span className="text-[10px] text-muted-foreground text-center">Actions</span>
+            <span className="text-[10px] text-muted-foreground text-center">Moves</span>
           </button>
           
           <button 
@@ -187,7 +187,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
     >
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-3 border-b border-border flex-shrink-0">
-        <h2 className="text-lg font-semibold">Community</h2>
+        <h2 className="text-lg font-semibold">Loop</h2>
         <Button
           variant="ghost"
           size="icon"
@@ -224,9 +224,9 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
           </Card>
         </div>
 
-        {/* Community Pulse */}
+        {/* Loop Pulse */}
         <div className="p-3 border-b border-border">
-          <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Community Pulse</h3>
+          <h3 className="text-xs font-semibold mb-2 text-muted-foreground uppercase tracking-wide">Loop Pulse</h3>
           <div className="space-y-2">
             <div className="flex items-start gap-3 text-sm">
               <Users className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -238,7 +238,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
             </div>
             <div className="flex items-start gap-3 text-sm">
               <Calendar className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-              <p className="text-muted-foreground">Next event: Friday at 6 PM</p>
+              <p className="text-muted-foreground">Next Move: Friday at 6 PM</p>
             </div>
           </div>
         </div>
@@ -293,14 +293,13 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
 
           {/* Contacts List */}
           <div className="space-y-1">
-            {/* Ori AI - Styled like other friends */}
+            {/* Navi guide - styled like other contacts */}
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => openChat(-1, 'Ori', true)}
+              onClick={() => openChat(-1, 'Navi', true)}
               className="w-full flex items-center gap-3 p-2.5 rounded-lg transition-colors hover:bg-muted"
             >
-              {/* Ori Avatar - Simple, no stripes */}
               <div className="relative">
                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#D97A5B] to-[#C26A52] flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,9 +312,9 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
 
               {/* Name & Status */}
               <div className="flex-1 text-left min-w-0">
-                <p className="text-sm font-medium truncate">Ori</p>
+                <p className="text-sm font-medium truncate">Navi</p>
                 <p className="text-xs text-muted-foreground">
-                  AI Assistant
+                  Community guide
                 </p>
               </div>
             </motion.button>
@@ -383,7 +382,7 @@ export function RightSidebar({ collapsed, onToggle, shouldOpenOriChat }: RightSi
           chatWith={{
             id: activeChatId,
             name: activeChatName,
-            isOri: isOriChat
+            isNavi: isNaviChat
           }}
           sidebarCollapsed={collapsed}
         />

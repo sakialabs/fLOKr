@@ -39,7 +39,7 @@ python manage.py runserver
 ✅ **Reservations** - Full lifecycle (create, pickup, return, extend, cancel)
 ✅ **Notifications** - Push notifications via Firebase, in-app
 ✅ **Background Tasks** - Celery for expiration, reminders, reports
-✅ **Ori AI** - Image tagging with ResNet50, auto-categorization
+✅ **Navi service** - Image tagging with ResNet50, auto-categorization
 ✅ **API Docs** - Interactive Swagger UI
 
 
@@ -79,8 +79,10 @@ python manage.py runserver
 - `PUT /{id}/` - Update item
 - `POST /{id}/mark_inactive/` - Mark inactive
 
-### Ori AI (`/api/ori/`)
+### Navi service (`/api/ori/`)
 - `POST /image-tag/` - Generate tags from image (file or URL)
+
+The backend keeps `/api/ori/` as a legacy-compatible route while the product UI presents the guide as Navi.
 
 ### Reservations (`/api/reservations/`)
 - `GET /` - List reservations
@@ -238,7 +240,7 @@ All scripts are in the `scripts/` folder at project root:
 - `scripts/run_tests.py` - Run backend tests
 - `scripts/setup-backend.sh` - Initial backend setup
 
-## Ori AI - Image Tagging
+## Navi Service - Image Tagging
 
 Automatic tag and category generation using ResNet50.
 
@@ -285,7 +287,7 @@ docker-compose down  # Stop all
 
 ## Next Steps
 
-1. ✅ Tasks 1-10 Complete (Auth, Hubs, Inventory, Reservations, Celery, Notifications, Ori AI)
+1. ✅ Tasks 1-10 Complete (Auth, Hubs, Inventory, Reservations, Celery, Notifications, Navi service)
 2. ⏭️ Task 11: Recommendation Engine
 
 See `docs/CHANGELOG.md` for details.

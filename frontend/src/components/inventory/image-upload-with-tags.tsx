@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Upload, X, Loader2, Sparkles, Tag as TagIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { oriAIService, TagSuggestion } from '@/lib/ori-ai'
+import { naviAIService, TagSuggestion } from '@/lib/ori-ai'
 
 interface ImageUploadWithTagsProps {
   onTagsSuggested?: (tags: string[], category: string) => void
@@ -51,7 +51,7 @@ export function ImageUploadWithTags({
     // Analyze image with AI
     setIsAnalyzing(true)
     try {
-      const result = await oriAIService.suggestTagsFromFile(file)
+      const result = await naviAIService.suggestTagsFromFile(file)
       setSuggestedTags(result.tags)
       setSuggestedCategory(result.category)
       setDetailedTags(result.detailed_tags)

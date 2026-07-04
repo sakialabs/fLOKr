@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Heart } from 'lucide-react'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -66,8 +65,8 @@ export function Footer() {
             transition={{ delay: 0.2 }}
             className="flex items-center justify-center"
           >
-            <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              Built with <Heart className="h-3.5 w-3.5 text-red-500 fill-red-500" /> for community, dignity, and respect
+            <span className="text-sm text-muted-foreground">
+              Built with 💖 for community, dignity, and respect.
             </span>
           </motion.div>
         </div>

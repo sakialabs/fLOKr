@@ -17,14 +17,16 @@ const routeNames: Record<string, string> = {
   items: 'Items',
   reservations: 'Reservations',
   hubs: 'Hubs',
-  community: 'Community',
+  loop: 'Loop',
+  community: 'Loop',
   profile: 'Profile',
   settings: 'Settings',
   onboarding: 'Onboarding',
   dashboard: 'Dashboard',
   steward: 'Steward',
   admin: 'Admin',
-  ori: 'Ori AI',
+  navi: 'Navi',
+  ori: 'Navi',
 }
 
 interface DynamicBreadcrumbsProps {
@@ -47,7 +49,7 @@ export function DynamicBreadcrumbs({ override }: DynamicBreadcrumbsProps = {}) {
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link href="/home" className="flex items-center gap-1">
-              <span>Dashboard</span>
+              <span>Home</span>
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>

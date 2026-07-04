@@ -2,15 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Send, Loader2, Sparkles, Minimize2, Maximize2, Package, MapPin, Users, HelpCircle, Circle } from 'lucide-react'
+import { X, Send, Loader2, Minimize2, Maximize2, Package, MapPin, Users, HelpCircle, Circle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { oriAIService, QuestionResponse } from '@/lib/ori-ai'
+import { naviAIService, QuestionResponse } from '@/lib/ori-ai'
 
 const quickActions = [
   { icon: Package, label: 'Find items', query: 'How do I find items to borrow?' },
   { icon: MapPin, label: 'Locate hubs', query: 'Where is my nearest hub?' },
-  { icon: Users, label: 'Find mentors', query: 'How do I find a mentor?' },
+  { icon: Users, label: 'Find Leads', query: 'How do I find a Lead?' },
   { icon: HelpCircle, label: 'Get help', query: 'How does fLOKr work?' },
 ]
 
@@ -28,7 +28,7 @@ interface ChatBubbleProps {
   chatWith: {
     id: number
     name: string
-    isOri?: boolean
+    isNavi?: boolean
   }
   sidebarCollapsed?: boolean
 }
@@ -50,19 +50,19 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
     }, 400) // Match animation duration
   }
 
-  // Initialize with welcome message for Ori
+  // Initialize with welcome message for Navi
   useEffect(() => {
-    if (isOpen && chatWith.isOri && messages.length === 0) {
+    if (isOpen && chatWith.isNavi && messages.length === 0) {
       setMessages([
         {
           id: '1',
           type: 'other',
-          content: "Hi! I'm Ori 🐦 your AI assistant. I'm here to help you navigate fLOKr, find items, connect with mentors, and answer any questions you have. How can I help you today?",
+          content: "Hi, I'm Navi. I can help you find resources, understand Signals, join Circles, plan Moves, connect with Crews, and get support through Shifts.",
           timestamp: new Date(),
         }
       ])
     }
-  }, [isOpen, chatWith.isOri, messages.length])
+  }, [isOpen, chatWith.isNavi, messages.length])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -91,21 +91,22 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
     setMessages(prev => [...prev, userMessage])
     setInput('')
 
-    if (chatWith.isOri) {
+    if (chatWith.isNavi) {
       setIsLoading(true)
       try {
-        const response: QuestionResponse = await oriAIService.askQuestion(messageText)
+        const response: QuestionResponse = await naviAIService.askQuestion(messageText)
         
-        const oriMessage: Message = {
+        const naviMessage: Message = {
           id: (Date.now() + 1).toString(),
           type: 'other',
           content: response.answer,
           timestamp: new Date(),
           confidence: response.confidence,
         }
-        setMessages(prev => [...prev, oriMessage])
+        setMessages(prev => [...prev, naviMessage])
       } catch (error) {
-        console.error('Error asking Ori:', error)
+        const message = error instanceof Error ? error.message : 'Unknown error'
+        console.warn(`Navi request failed: ${message}`)
         
         const errorMessage: Message = {
           id: (Date.now() + 1).toString(),
@@ -154,12 +155,12 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
         {/* Header */}
         <div 
           className={`flex items-center justify-between p-3 ${!isMinimized ? 'border-b border-border' : ''} ${
-            chatWith.isOri ? 'bg-gradient-to-r from-[#D97A5B]/5 to-[#C26A52]/5' : 'bg-muted/30'
+            chatWith.isNavi ? 'bg-gradient-to-r from-[#D97A5B]/5 to-[#C26A52]/5' : 'bg-muted/30'
           } ${isMinimized ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
           onClick={isMinimized ? () => setIsMinimized(false) : undefined}
         >
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            {chatWith.isOri ? (
+            {chatWith.isNavi ? (
               <div className="relative flex-shrink-0">
                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#D97A5B] to-[#C26A52] flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +180,7 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
               </p>
               {!isMinimized && (
                 <p className="text-xs text-muted-foreground truncate">
-                  {chatWith.isOri ? 'AI Assistant' : 'Online'}
+                  {chatWith.isNavi ? 'Community guide' : 'Online'}
                 </p>
               )}
             </div>
@@ -221,20 +222,13 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
                       className={`inline-block max-w-[85%] rounded-2xl px-3 py-2 ${
                         message.type === 'user'
                           ? 'bg-primary text-primary-foreground'
-                          : chatWith.isOri
+                          : chatWith.isNavi
                           ? 'bg-card border border-border'
                           : 'bg-card'
                       }`}
                     >
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                       
-                      {/* Confidence Badge for Ori */}
-                      {chatWith.isOri && message.type === 'other' && message.confidence !== undefined && message.confidence > 0.7 && (
-                        <div className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
-                          <Sparkles className="h-3 w-3" />
-                          <span>High confidence</span>
-                        </div>
-                      )}
                     </div>
                     
                     {/* Timestamp */}
@@ -277,8 +271,8 @@ export function ChatBubble({ isOpen, onClose, chatWith, sidebarCollapsed = false
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Actions - Show only for Ori until user types their own message */}
-            {chatWith.isOri && !hasUserTyped && (
+            {/* Quick Actions - show only for Navi until user types their own message */}
+            {chatWith.isNavi && !hasUserTyped && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

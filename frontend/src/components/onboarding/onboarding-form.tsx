@@ -178,7 +178,7 @@ export function OnboardingForm() {
         <div className="space-y-4">
           <Label>Your address</Label>
           <p className="text-sm text-muted-foreground -mt-2">
-            📍 We&apos;ll connect you with your nearest community hub and local mentors
+            We&apos;ll connect you with your nearest hub and local Leads
           </p>
           
           <div className="grid grid-cols-2 gap-4">
@@ -258,7 +258,7 @@ export function OnboardingForm() {
             onChange={(value) => updatePreference('phone', value || '')}
           />
           <p className="text-sm text-muted-foreground">
-            📱 We&apos;ll use this to notify you about hub events and urgent updates
+            We&apos;ll use this to notify you about hub Moves and urgent updates
           </p>
         </div>
 
@@ -277,7 +277,7 @@ export function OnboardingForm() {
             ))}
           </div>
           <p className="text-sm text-muted-foreground">
-            🌍 This helps us match you with mentors who speak your language
+            This helps us match you with Leads who speak your language
           </p>
         </div>
 
@@ -503,9 +503,9 @@ export function OnboardingForm() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label>Looking for a mentor?</Label>
+              <Label>Looking for a Lead?</Label>
               <p className="text-sm text-muted-foreground">
-                We&apos;ll match you with experienced community members
+                We&apos;ll match you with trusted helpers
               </p>
             </div>
             <input

@@ -1,11 +1,12 @@
 'use client'
 
-import { Mail, MessageCircle, Users } from 'lucide-react'
+import { Bug, Github, MessageCircle } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { motion } from 'framer-motion'
 import { AppHeader } from '@/components/layout/app-header'
 import { Footer } from '@/components/layout/footer'
+import { GITHUB_ISSUES_URL, GITHUB_REPO_URL } from '@/lib/project-links'
 
 export default function ContactPage() {
   return (
@@ -35,14 +36,27 @@ export default function ContactPage() {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/50">
-                  <Mail className="h-6 w-6 text-primary mt-1" />
+                  <Github className="h-6 w-6 text-primary mt-1" />
                   <div>
-                    <h3 className="font-semibold mb-1">Email Support</h3>
+                    <h3 className="font-semibold mb-1">GitHub Repo</h3>
                     <p className="text-sm text-muted-foreground mb-2">
-                      For general inquiries, support requests, or partnership opportunities
+                      For general inquiries, support requests, or partnership opportunities while the public site is not live yet
                     </p>
-                    <a href="mailto:support@flokr.org" className="text-primary hover:underline">
-                      support@flokr.org
+                    <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      Open GitHub repo
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/50">
+                  <Bug className="h-6 w-6 text-primary mt-1" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Report an Issue</h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Found a bug, broken flow, or confusing copy? Open an issue and include the page or steps.
+                    </p>
+                    <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                      Open GitHub issues
                     </a>
                   </div>
                 </div>
@@ -52,17 +66,7 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold mb-1">Community Help</h3>
                     <p className="text-sm text-muted-foreground">
-                      Connect with Ori, our AI assistant, or reach out to community mentors through the platform for immediate support and guidance.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/50">
-                  <Users className="h-6 w-6 text-primary mt-1" />
-                  <div>
-                    <h3 className="font-semibold mb-1">Response Time</h3>
-                    <p className="text-sm text-muted-foreground">
-                      We typically respond within 24-48 hours. For urgent matters, please reach out through your local hub or community coordinator.
+                      Connect with Navi, our community guide, or reach out to Leads through the platform. For urgent matters, please contact your local hub or community coordinator.
                     </p>
                   </div>
                 </div>

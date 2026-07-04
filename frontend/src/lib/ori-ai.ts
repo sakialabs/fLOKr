@@ -1,7 +1,8 @@
 /**
- * Ori AI Services
- * Intelligent AI-powered features for fLOKr
+ * Navi services backed by the existing legacy AI API endpoints.
+ * Intelligent AI-powered features for fLOKr.
  */
+import axios from 'axios'
 import { apiClient } from './api'
 
 export interface TagSuggestion {
@@ -44,7 +45,27 @@ export interface FAQEntry {
   helpful_count?: number
 }
 
-export const oriAIService = {
+const createNaviFallbackResponse = (answer: string): QuestionResponse => ({
+  answer,
+  confidence: 0,
+  question_matched: null,
+  category: null,
+  related_faqs: [],
+  response_time: 0,
+  method: 'fallback',
+})
+
+const isTemporaryNaviFailure = (error: unknown) => {
+  if (!axios.isAxiosError(error)) {
+    return false
+  }
+
+  const status = error.response?.status
+
+  return !error.response || (typeof status === 'number' && status >= 500)
+}
+
+const legacyGuideService = {
   /**
    * Get tag and category suggestions for an image
    * @param imageFile - Image file to analyze
@@ -104,7 +125,7 @@ export const oriAIService = {
   },
 
   /**
-   * Ask Ori a natural language question
+   * Ask Navi a natural language question
    * @param question - The question to ask
    * @param category - Optional category filter
    * @param limit - Maximum number of related FAQs to return
@@ -115,12 +136,29 @@ export const oriAIService = {
     category?: string,
     limit: number = 3
   ): Promise<QuestionResponse> {
-    const response = await apiClient.post<QuestionResponse>(
-      '/ori/ask/',
-      { question, category, limit }
-    )
-    
-    return response.data
+    try {
+      const response = await apiClient.post<QuestionResponse>(
+        '/ori/ask/',
+        { question, category, limit },
+        { skipAuthRedirect: true }
+      )
+
+      return response.data
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        return createNaviFallbackResponse(
+          "I can answer live questions once you're signed in. For now, you can open the Loop, browse items, find hubs, or register to connect with local support."
+        )
+      }
+
+      if (isTemporaryNaviFailure(error)) {
+        return createNaviFallbackResponse(
+          "I can't reach the live help service right now. You can still open the Loop, browse items, find hubs, or contact a Lead; try again in a moment."
+        )
+      }
+
+      throw error
+    }
   },
 
   /**
@@ -153,3 +191,5 @@ export const oriAIService = {
     return response.data
   },
 }
+
+export const naviAIService = legacyGuideService

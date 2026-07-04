@@ -7,6 +7,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { GITHUB_ISSUES_URL } from '@/lib/project-links'
 
 export default function PrivacyPolicyPage() {
   return (
@@ -54,7 +55,7 @@ export default function PrivacyPolicyPage() {
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Account Information:</strong> Name, email, phone, language preferences, and profile details you choose to share</li>
                   <li><strong>Platform Activity:</strong> Items you list, reserve, or transfer; hubs you join; connections you make</li>
-                  <li><strong>Communication:</strong> Messages with Ori (our AI assistant), community interactions, and support requests</li>
+                  <li><strong>Communication:</strong> Messages with Navi, community interactions, and support requests</li>
                   <li><strong>Technical Data:</strong> Device info, IP address, and usage patterns to improve security and service quality</li>
                 </ul>
               </div>
@@ -67,7 +68,7 @@ export default function PrivacyPolicyPage() {
                 <p className="text-muted-foreground mb-3">Your information serves one purpose: helping you thrive.</p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li><strong>Service Delivery:</strong> Connect you with resources, enable reservations, facilitate community support</li>
-                  <li><strong>Personalization:</strong> Ori learns your preferences to provide helpful, relevant guidance</li>
+                  <li><strong>Personalization:</strong> Navi uses your preferences to provide helpful, relevant guidance</li>
                   <li><strong>Safety:</strong> Prevent fraud, ensure fair access, and maintain community trust</li>
                   <li><strong>Improvement:</strong> Understand how the platform is used to build better features</li>
                 </ul>
@@ -87,7 +88,7 @@ export default function PrivacyPolicyPage() {
                   <li><strong>Objection:</strong> Opt out of specific data uses</li>
                 </ul>
                 <p className="text-muted-foreground mt-3">
-                  Contact us at <a href="mailto:privacy@flokr.org" className="text-primary hover:underline">privacy@flokr.org</a> to exercise any of these rights.
+                  Contact us through the <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">fLOKr GitHub issue tracker</a> to exercise any of these rights. Please do not include sensitive personal details in a public issue.
                 </p>
               </div>
 
@@ -108,7 +109,7 @@ export default function PrivacyPolicyPage() {
               <div className="pt-6 border-t">
                 <p className="text-sm text-muted-foreground">
                   <strong>Last Updated:</strong> December 2025<br />
-                  Questions? Email <a href="mailto:privacy@flokr.org" className="text-primary hover:underline">privacy@flokr.org</a>
+                  Questions? Open an issue in the <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">fLOKr GitHub repo</a>
                 </p>
               </div>
             </div>

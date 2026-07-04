@@ -1,8 +1,20 @@
 import type { NextConfig } from 'next'
+import { PHASE_DEVELOPMENT_SERVER } from 'next/constants'
 import path from 'path'
 
-const nextConfig: NextConfig = {
+const normalizeApiBaseUrl = (url: string) => {
+  const trimmedUrl = url.trim().replace(/\/+$/, '')
+
+  if (!trimmedUrl) {
+    return 'http://localhost:8000/api'
+  }
+
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`
+}
+
+const createNextConfig = (phase: string): NextConfig => ({
   reactStrictMode: true,
+  distDir: phase === PHASE_DEVELOPMENT_SERVER ? '.next-dev' : '.next',
   outputFileTracingRoot: path.join(__dirname, '../'),
   images: {
     remotePatterns: [
@@ -12,12 +24,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Optimize chunk loading
-  experimental: {
-    optimizePackageImports: ['@/components', '@/lib'],
+  async redirects() {
+    return [
+      {
+        source: '/ori',
+        destination: '/navi',
+        permanent: false,
+      },
+    ]
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+    const apiUrl = normalizeApiBaseUrl(
+      process.env.NEXT_PRIVATE_API_URL ||
+        process.env.API_PROXY_TARGET ||
+        'http://localhost:8000'
+    )
     return [
       {
         source: '/api/:path*',
@@ -26,7 +47,6 @@ const nextConfig: NextConfig = {
     ]
   },
   webpack: (config, { isServer }) => {
-    // Fix for framer-motion and other client-side only packages
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -34,15 +54,9 @@ const nextConfig: NextConfig = {
         net: false,
         tls: false,
       }
-      
-      // Improve chunk loading reliability
-      config.output = {
-        ...config.output,
-        crossOriginLoading: 'anonymous',
-      }
     }
     return config
   },
-}
+})
 
-export default nextConfig
+export default createNextConfig

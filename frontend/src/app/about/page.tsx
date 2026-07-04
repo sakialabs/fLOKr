@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { AppHeader } from '@/components/layout/app-header'
 import { Footer } from '@/components/layout/footer'
 import { Card, CardContent } from '@/components/ui/card'
-import { Heart, Users, Sparkles, Shield, Globe, ArrowRight } from 'lucide-react'
+import { Heart, Users, Sparkles, Shield, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
@@ -17,13 +17,13 @@ export default function AboutPage() {
     },
     {
       icon: Users,
-      title: 'Community Powered',
-      description: 'Connect with local hubs and mentors who understand your journey.',
+      title: 'Loop Powered',
+      description: 'Connect with local hubs and Leads who understand your journey.',
     },
     {
       icon: Sparkles,
-      title: 'Ori AI Assistant',
-      description: 'Smart recommendations and multilingual support powered by AI.',
+      title: 'Navi Community Guide',
+      description: 'Helpful suggestions, multilingual support, and practical next steps.',
     },
     {
       icon: Shield,
@@ -68,8 +68,8 @@ export default function AboutPage() {
           </h1>
           
           <p className="text-xl text-muted-foreground leading-relaxed">
-            Supporting newcomers worldwide. fLOKr is a community resource sharing platform powered by Ori AI that connects newcomers with essential resources, 
-            mentorship, and support through a network of local hubs, all with dignity and respect.
+            Supporting newcomers worldwide. fLOKr is a community operating system with Navi as a practical guide that connects newcomers with essential resources,
+            Leads, and support through a network of local hubs, all with dignity and respect.
           </p>
         </motion.div>
 
@@ -99,7 +99,7 @@ export default function AboutPage() {
           animate="visible"
           className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16"
         >
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <motion.div key={feature.title} variants={itemVariants}>
               <Card className="h-full hover:shadow-lg transition-all duration-300 hover:border-primary/40">
                 <CardContent className="pt-6">
@@ -128,10 +128,10 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-8 text-center">How It Works</h2>
           <div className="space-y-6">
             {[
-              { step: '1', title: 'Join the Community', desc: 'Create your account and connect with your local hub.' },
-              { step: '2', title: 'Find Resources', desc: 'Browse available items or get AI-powered recommendations from Ori.' },
+              { step: '1', title: 'Join the Loop', desc: 'Create your account and connect with your local hub.' },
+              { step: '2', title: 'Find Resources', desc: 'Browse available items or ask Navi for practical recommendations.' },
               { step: '3', title: 'Connect & Reserve', desc: 'Reserve items and coordinate pickup with your community hub.' },
-              { step: '4', title: 'Give Back', desc: 'Share resources and mentor others when you\u2019re ready.' },
+              { step: '4', title: 'Give Back', desc: 'Share resources and become a Lead when you\u2019re ready.' },
             ].map((item, index) => (
               <motion.div
                 key={item.step}

@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import { motion } from 'framer-motion'
 import { AppLayout } from '@/components/layout/app-layout'
+import { CommunityFeed } from '@/components/feed/community-feed'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Users, Award, Heart, Calendar, Megaphone, MessageCircle } from 'lucide-react'
@@ -33,7 +34,7 @@ interface BadgeAward {
   awarded_at: string
 }
 
-interface Event {
+interface Move {
   id: string
   title: string
   description: string
@@ -67,7 +68,7 @@ export default function CommunityPage() {
   const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
   const [newcomers, setNewcomers] = useState<Newcomer[]>([])
   const [recentBadges, setRecentBadges] = useState<BadgeAward[]>([])
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
+  const [upcomingMoves, setUpcomingMoves] = useState<Move[]>([])
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [successStories, setSuccessStories] = useState<Feedback[]>([])
   const [mentorshipCount, setMentorshipCount] = useState(0)
@@ -109,7 +110,7 @@ export default function CommunityPage() {
   const fetchCommunityData = async () => {
     try {
       // Fetch all community data in parallel
-      const [newcomersRes, badgesRes, eventsRes, announcementsRes, feedbackRes, mentorshipRes] = await Promise.all([
+      const [newcomersRes, badgesRes, movesRes, announcementsRes, feedbackRes, mentorshipRes] = await Promise.all([
         api.get('/community/data/newcomers/'),
         api.get('/community/user-badges/?recent=true'),
         api.get('/hubs/events/?upcoming=true'),
@@ -121,14 +122,14 @@ export default function CommunityPage() {
       // Handle both paginated (ViewSet) and non-paginated responses
       const newcomersData = Array.isArray(newcomersRes.data) ? newcomersRes.data : newcomersRes.data.results || []
       const badgesData = Array.isArray(badgesRes.data) ? badgesRes.data : badgesRes.data.results || []
-      const eventsData = Array.isArray(eventsRes.data) ? eventsRes.data : eventsRes.data.results || []
+      const movesData = Array.isArray(movesRes.data) ? movesRes.data : movesRes.data.results || []
       const announcementsData = Array.isArray(announcementsRes.data) ? announcementsRes.data : announcementsRes.data.results || []
       const feedbackData = Array.isArray(feedbackRes.data) ? feedbackRes.data : feedbackRes.data.results || []
       const mentorshipData = Array.isArray(mentorshipRes.data) ? mentorshipRes.data : mentorshipRes.data.results || []
 
       setNewcomers(newcomersData.slice(0, 5))
       setRecentBadges(badgesData.slice(0, 5))
-      setUpcomingEvents(eventsData.slice(0, 5))
+      setUpcomingMoves(movesData.slice(0, 5))
       setAnnouncements(announcementsData.slice(0, 5))
       setSuccessStories(feedbackData.slice(0, 5))
       setMentorshipCount(mentorshipData.length || 0)
@@ -170,24 +171,28 @@ export default function CommunityPage() {
         variants={containerVariants}
         className="space-y-6"
       >
-        {/* Community Header */}
+        {/* Loop Header */}
         <motion.div variants={itemVariants}>
-          <h1 className="text-3xl font-bold tracking-tight">Community Space</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Loop</h1>
           <p className="text-muted-foreground">
-            What&apos;s happening across our community
+            Stay connected with your hub, circles, and local crews.
           </p>
         </motion.div>
 
-        {/* All Cards in Responsive Grid */}
+        <motion.div variants={itemVariants}>
+          <CommunityFeed showHeader={false} />
+        </motion.div>
+
+        {/* Loop support cards */}
         <div className="grid gap-6 lg:grid-cols-2">
-        {/* Welcome New Members */}
+        {/* Circles */}
         {newcomers.length > 0 && (
           <motion.div variants={itemVariants}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-green-500" />
-                <CardTitle>Welcome New Members</CardTitle>
+                <CardTitle>Newcomer Circle</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -208,7 +213,7 @@ export default function CommunityPage() {
                     disabled={connectingUsers.has(newcomer.id)}
                     className="flex-shrink-0"
                   >
-                    {connectingUsers.has(newcomer.id) ? 'Pending' : 'Connect'}
+                    {connectingUsers.has(newcomer.id) ? 'Pending' : 'Say hello'}
                   </Button>
                 </div>
               ))}
@@ -217,14 +222,14 @@ export default function CommunityPage() {
           </motion.div>
         )}
 
-        {/* Community Achievements */}
+        {/* Loop Highlights */}
         {recentBadges.length > 0 && (
           <motion.div variants={itemVariants}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Award className="h-5 w-5 text-amber-500" />
-                <CardTitle>Community Achievements</CardTitle>
+                <CardTitle>Loop Highlights</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -246,28 +251,28 @@ export default function CommunityPage() {
           </motion.div>
         )}
 
-        {/* Upcoming Events */}
-        {upcomingEvents.length > 0 && (
+        {/* Moves */}
+        {upcomingMoves.length > 0 && (
           <motion.div variants={itemVariants}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-blue-500" />
-                <CardTitle>Upcoming Events</CardTitle>
+                <CardTitle>Moves near you</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              {upcomingEvents.map((event) => (
-                <div key={event.id} className="p-3 bg-blue-500/5 rounded-lg border border-blue-500/10 min-w-0">
+              {upcomingMoves.map((move) => (
+                <div key={move.id} className="p-3 bg-blue-500/5 rounded-lg border border-blue-500/10 min-w-0">
                   <div className="flex items-start justify-between gap-3 min-w-0">
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{event.title}</p>
+                      <p className="font-medium truncate">{move.title}</p>
                       <p className="text-xs text-muted-foreground mt-1 truncate">
-                        {new Date(event.event_date).toLocaleDateString()} · {event.hub_name}
+                        {new Date(move.event_date).toLocaleDateString()} · {move.hub_name}
                       </p>
-                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{event.description}</p>
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{move.description}</p>
                     </div>
-                    <Button size="sm" variant="outline" className="flex-shrink-0">Details</Button>
+                    <Button size="sm" variant="outline" className="flex-shrink-0">Join a Move</Button>
                   </div>
                 </div>
               ))}
@@ -276,14 +281,14 @@ export default function CommunityPage() {
           </motion.div>
         )}
 
-        {/* Hub Announcements */}
+        {/* Hub Signals */}
         {announcements.length > 0 && (
           <motion.div variants={itemVariants}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Megaphone className="h-5 w-5 text-orange-500" />
-                <CardTitle>Hub Announcements</CardTitle>
+                <CardTitle>Hub Signals</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -309,39 +314,39 @@ export default function CommunityPage() {
           </motion.div>
         )}
 
-        {/* Active Mentorships */}
+        {/* Leads */}
         {mentorshipCount > 0 && (
           <motion.div variants={itemVariants}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-purple-500" />
-                <CardTitle>Active Mentorships</CardTitle>
+                <CardTitle>Active Leads</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between gap-3 p-4 bg-purple-500/5 rounded-lg border border-purple-500/10 min-w-0">
                 <div className="min-w-0 flex-1">
-                  <p className="font-medium truncate">{mentorshipCount} active mentorship connections</p>
+                  <p className="font-medium truncate">{mentorshipCount} active Lead connections</p>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                    Community members helping newcomers settle in
+                    Trusted helpers supporting newcomers, Circles, and Crews.
                   </p>
                 </div>
-                <Button size="sm" className="flex-shrink-0">Learn More</Button>
+                <Button size="sm" className="flex-shrink-0">Find Leads</Button>
               </div>
             </CardContent>
           </Card>
           </motion.div>
         )}
 
-        {/* Success Stories */}
+        {/* Helpful Signals */}
         {successStories.length > 0 && (
-          <motion.div variants={itemVariants} className={successStories.length === 1 && (newcomers.length + recentBadges.length + upcomingEvents.length + announcements.length + (mentorshipCount > 0 ? 1 : 0)) % 2 === 0 ? 'lg:col-span-2' : ''}>
+          <motion.div variants={itemVariants} className={successStories.length === 1 && (newcomers.length + recentBadges.length + upcomingMoves.length + announcements.length + (mentorshipCount > 0 ? 1 : 0)) % 2 === 0 ? 'lg:col-span-2' : ''}>
           <Card className="h-full">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-pink-500" />
-                <CardTitle>Community Stories</CardTitle>
+                <CardTitle>Helpful Signals</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">

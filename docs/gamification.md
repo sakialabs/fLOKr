@@ -44,17 +44,17 @@ Tie them to birds and migration, subtly.
 
 These are status signals, not ranks.
 
-## Ori AI as the gentle guide
+## Navi as the gentle guide
 
-Ori shouldn't shout. Ori should notice.
+Navi should not shout. Navi should notice.
 
 Examples:
 
-- "Ori noticed you've helped a lot lately. Thank you."
-- "Ori suggests winter boots are in high demand this week."
-- "Ori thinks you might like welcoming someone new."
+- "Navi noticed you've helped a lot lately. Thank you."
+- "Navi suggests winter boots are in high demand this week."
+- "Navi thinks you might like welcoming someone new."
 
-Ori rewards behavior by naming it, not gamifying it aggressively.
+Navi rewards behavior by naming it, not gamifying it aggressively.
 
 ## Micro-rewards (quiet but effective)
 
@@ -80,7 +80,7 @@ Progress is collective. Rewards are collective. That's flock energy.
 
 - Leaderboards by default
 - Public shaming or rankings
-- Like counts on posts
+- Like counts on Signals
 - Daily streaks
 
 Those break trust fast.
@@ -91,7 +91,7 @@ The app doesn't need to make people compete.
 
 It needs to help them feel useful, seen, and safe.
 
-Ori the oriole guiding people as they land, help, and stay grounded is a strong narrative thread. You're building a place, not a game. And ironically, that's what makes it engaging.
+Navi guiding people as they land, help, and stay grounded is a strong narrative thread. You're building a place, not a game. And ironically, that's what makes it engaging.
 
 ---
 

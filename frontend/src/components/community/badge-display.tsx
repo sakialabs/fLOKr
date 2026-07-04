@@ -20,7 +20,7 @@ export function BadgeDisplay({ userBadges, allBadges = [], showLocked = true }: 
     'community': 'Community Energy',
     'trust': 'Steward & Trust',
     'milestone': 'Milestone',
-    'mentorship': 'Mentorship'
+    'mentorship': 'Leads'
   }
 
   const badgesByCategory = userBadges.reduce((acc, ub) => {

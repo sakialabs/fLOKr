@@ -1,6 +1,6 @@
 # 🪿 fLOKr Platform
 
-A digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items while connecting with local mentors and community hubs.
+A digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items while connecting with Leads, Circles, Crews, and local hubs.
 
 ## 🚀 Quick Start
 
@@ -146,15 +146,22 @@ cd mobile && npm test
 - User authentication and role-based access control
 - Inventory management across multiple hubs
 - Reservation and borrowing system
-- Community features (badges, feedback, mentorship)
+- Community features (badges, feedback, Leads, Loop, Signals, Circles, and Moves)
 - Partner organization support
-- Ori AI integration (planned)
+- Navi community guide integration (planned)
 - Push notifications
 - Geospatial hub assignment
 
 ## Documentation
 
 - **[Setup Guide](docs/setup.md)** - Complete setup for backend, frontend, and mobile
+- **[Product Vision](docs/product.md)** - fLOKr's unified community operating system direction
+- **[Merge Plan](docs/merge-plan.md)** - Focused fLOKr + RiseUp migration strategy
+- **[Naming System](docs/naming-system.md)** - Loop, Signals, Circles, Crews, Leads, Moves, and Shifts
+- **[Information Architecture](docs/information-architecture.md)** - MVP navigation and route structure
+- **[Roadmap](docs/roadmap.md)** - Merge roadmap and follow-up work
+- **[Data Model Notes](docs/data-model.md)** - Safe product-language aliases over risky table renames
+- **[Migration Notes](docs/migration-notes.md)** - What was and was not ported from RiseUp
 - **[Changelog](docs/CHANGELOG.md)** - Project progress, version history, and checkpoint verification
 - **[Requirements](docs/requirements.md)** - Feature requirements
 - **[Design Document](docs/design.md)** - System architecture and design

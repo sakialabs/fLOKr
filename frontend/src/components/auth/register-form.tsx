@@ -324,7 +324,7 @@ export function RegisterForm() {
             disabled={loading}
           />
           <p className="text-xs text-muted-foreground">
-            We&apos;ll use this to connect you with your nearest community hub and local mentors
+            We&apos;ll use this to connect you with your nearest hub and local Leads
           </p>
           {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
         </div>

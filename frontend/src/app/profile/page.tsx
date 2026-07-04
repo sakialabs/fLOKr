@@ -142,9 +142,9 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex items-center justify-between p-3 rounded-lg bg-muted">
-                <span className="text-sm font-medium">Mentor Status</span>
+                <span className="text-sm font-medium">Lead Status</span>
                 <span className="text-sm font-medium">
-                  {user.is_mentor ? '✅ Active' : '❌ Not a mentor'}
+                  {user.is_mentor ? 'Active' : 'Not a Lead'}
                 </span>
               </div>
 

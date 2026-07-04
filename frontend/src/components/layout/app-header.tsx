@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Logo } from '@/components/ui/logo'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
-import { Moon, Sun, Sparkles, Info, Mail, Menu, X } from 'lucide-react'
+import { Moon, Sun, Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AppHeaderProps {
@@ -32,15 +32,16 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
 
   const navLinks = isAuthenticated
     ? [
-        { href: '/home', label: 'Dashboard', icon: null },
-        { href: '/ori', label: 'Ori AI', icon: Sparkles },
-        { href: '/about', label: 'About', icon: Info },
-        { href: '/contact', label: 'Contact', icon: Mail },
+        { href: '/home', label: 'Home' },
+        { href: '/loop', label: 'Loop' },
+        { href: '/navi', label: 'Navi' },
+        { href: '/about', label: 'About' },
+        { href: '/contact', label: 'Contact' },
       ]
     : [
-        { href: '/about', label: 'About', icon: Info },
-        { href: '/contact', label: 'Contact', icon: Mail },
-        { href: '/login', label: 'Login', icon: null },
+        { href: '/about', label: 'About' },
+        { href: '/contact', label: 'Contact' },
+        { href: '/login', label: 'Login' },
       ]
 
   const ctaLink = isAuthenticated ? null : { href: '/register', label: 'Get Involved' }
@@ -55,7 +56,7 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
 
   return (
     <motion.header
-      initial={{ y: -100, opacity: 0 }}
+      initial={false}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className={cn(
@@ -68,10 +69,8 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href={isAuthenticated ? '/home' : '/'} className="flex items-center gap-3">
-            <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.2 }}>
-              <Logo size={40} showBackground animate={false} />
-            </motion.div>
+          <Link href={isAuthenticated ? '/home' : '/'} className="flex items-center gap-3 transition-opacity hover:opacity-85">
+            <Logo size={40} showBackground animate={false} />
             <span className="text-xl font-bold text-primary">
               fLOKr
             </span>
@@ -80,7 +79,6 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link, index) => {
-              const Icon = link.icon
               const isActive = pathname === link.href || 
                 (link.href === '/login' && pathname === '/register')
               
@@ -95,9 +93,8 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="relative gap-2 transition-all duration-200"
+                      className="relative transition-all duration-200"
                     >
-                      {Icon && <Icon className="h-4 w-4" />}
                       {link.label}
                       {isActive && (
                         <motion.div
@@ -196,7 +193,6 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
             >
               <div className="py-4 space-y-1">
                 {navLinks.map((link, index) => {
-                  const Icon = link.icon
                   const isActive = pathname === link.href
                   
                   return (
@@ -209,9 +205,8 @@ export function AppHeader({ isAuthenticated = false }: AppHeaderProps) {
                       <Link href={link.href} onClick={() => setMobileMenuOpen(false)}>
                         <Button
                           variant={isActive ? 'secondary' : 'ghost'}
-                          className="w-full justify-start gap-2"
+                          className="w-full justify-start"
                         >
-                          {Icon && <Icon className="h-4 w-4" />}
                           {link.label}
                         </Button>
                       </Link>

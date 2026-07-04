@@ -2,12 +2,12 @@
 
 ## Overview
 
-The fLOKr platform is a full-stack web and mobile application designed to connect newcomers with community resources through intelligent resource sharing and mentorship. The system consists of four primary layers:
+The fLOKr platform is a full-stack web and mobile application designed to connect newcomers with community resources through intelligent resource sharing and Lead support. The system consists of four primary layers:
 
 1. **Web Frontend**: Next.js application providing responsive access for desktop and tablet users
 2. **Mobile Frontend**: Expo React Native application providing native iOS/Android access
 3. **Backend API**: Django REST Framework providing business logic, data persistence, and API endpoints
-4. **Ori AI Layer**: Machine learning services for image tagging, recommendations, demand forecasting, and natural language processing
+4. **Navi Layer**: Machine learning services for image tagging, recommendations, demand forecasting, and natural language processing
 
 The platform follows a hub-and-spoke model where physical community hubs serve as inventory centers, with digital coordination enabling efficient resource distribution across neighborhoods and cities. Both web and mobile frontends connect to the same backend API, ensuring feature parity and consistent data access.
 
@@ -44,7 +44,7 @@ The platform follows a hub-and-spoke model where physical community hubs serve a
             └────────────┬────────────┘
                          │
             ┌────────────▼────────────┐
-            │     Ori AI Services     │
+            │     Navi Services       │
             │  - Image Tagging (CNN)  │
             │  - Recommendations      │
             │  - Demand Forecasting   │
@@ -82,7 +82,7 @@ The platform follows a hub-and-spoke model where physical community hubs serve a
 - Redis for caching and session management
 - Celery for asynchronous task processing
 
-**Ori AI:**
+**Navi Services:**
 - TensorFlow/PyTorch for ML models
 - Pre-trained ResNet50 or EfficientNet for image classification
 - Sentence transformers for semantic search
@@ -262,13 +262,13 @@ GET /api/community/leaderboard
 GET /api/users/{user_id}/reputation
 ```
 
-### 6. Mentorship Service
+### 6. Lead Support Service
 
 **Responsibilities:**
-- Mentor-mentee matching
+- Lead-newcomer matching
 - Connection management
 - In-app messaging
-- Mentorship feedback
+- Lead support feedback
 
 **Key Interfaces:**
 ```python
@@ -281,7 +281,9 @@ POST /api/mentorship/messages
 GET /api/mentorship/messages?connection_id={id}
 ```
 
-### 7. Ori AI Service
+These endpoints keep legacy `mentorship` paths until a backend migration is explicitly planned.
+
+### 7. Navi Service
 
 **Responsibilities:**
 - Automatic image tagging and categorization
@@ -298,6 +300,8 @@ GET /api/ori/forecast?hub_id={id}&category={cat}
 POST /api/ori/ask
 POST /api/ori/translate
 ```
+
+These endpoints keep legacy `/api/ori` paths for backend compatibility while the product presents the guide as Navi.
 
 ### 8. Notification Service
 
@@ -426,7 +430,7 @@ GET /api/analytics/demand-trends
   "description": "text",
   "icon_url": "string",
   "criteria": "object",
-  "category": "enum[contribution, mentorship, community, milestone]",
+  "category": "enum[contribution, lead_support, community, milestone]",
   "created_at": "timestamp"
 }
 ```
@@ -527,8 +531,8 @@ GET /api/analytics/demand-trends
 *For any* user address and set of hub locations, the assigned hub should be the geographically nearest hub to the user's address.
 **Validates: Requirements 1.4, 10.2**
 
-**Property 5: Mentor flag setting**
-*For any* user who indicates mentor availability, their profile should have the mentor flag set to true.
+**Property 5: Lead availability setting**
+*For any* user who indicates Lead availability, their profile should have the Lead flag set to true.
 **Validates: Requirements 2.3**
 
 ### Inventory Management Properties
@@ -593,18 +597,18 @@ GET /api/analytics/demand-trends
 *For any* user with a non-English preferred language, all recommendations, guidance, and interface text should be provided in their preferred language.
 **Validates: Requirements 5.5**
 
-### Ori AI Properties
+### Navi Properties
 
 **Property 20: Automatic image tagging**
-*For any* uploaded item image, the Ori AI should generate suggested tags and category classification within five seconds.
+*For any* uploaded item image, Navi should generate suggested tags and category classification within five seconds.
 **Validates: Requirements 3.2**
 
 **Property 21: Natural language question answering**
-*For any* natural language question submitted to Ori AI, a response should be generated within ten seconds.
+*For any* natural language question submitted to Navi, a response should be generated within ten seconds.
 **Validates: Requirements 5.2**
 
 **Property 22: Demand forecast generation**
-*For any* hub and item category, the Ori AI should generate demand predictions for the next thirty days based on historical data and seasonal patterns.
+*For any* hub and item category, Navi should generate demand predictions for the next thirty days based on historical data and seasonal patterns.
 **Validates: Requirements 6.1**
 
 **Property 23: High-demand alerting**
@@ -695,18 +699,18 @@ GET /api/analytics/demand-trends
 *For any* administrator viewing the platform dashboard, metrics should be correctly aggregated across all hubs (total users, items, transactions).
 **Validates: Requirements 10.4**
 
-### Mentorship Properties
+### Lead Support Properties
 
-**Property 43: Mentor matching criteria**
-*For any* mentor matching request, suggested mentors should share at least one language or interest with the newcomer and be within reasonable geographic proximity.
+**Property 43: Lead matching criteria**
+*For any* Lead matching request, suggested Leads should share at least one language or interest with the newcomer and be within reasonable geographic proximity.
 **Validates: Requirements 12.1**
 
-**Property 44: Mentorship connection activation**
-*For any* accepted mentorship request, a connection record should be created with active status and messaging should be enabled between mentor and mentee.
+**Property 44: Lead connection activation**
+*For any* accepted Lead support request, a connection record should be created with active status and messaging should be enabled between the Lead and newcomer.
 **Validates: Requirements 12.2**
 
 **Property 45: Message persistence and retrieval**
-*For any* message sent in a mentorship connection, the message should be stored and retrievable in the message history for that connection.
+*For any* message sent in a Lead support connection, the message should be stored and retrievable in the message history for that connection.
 **Validates: Requirements 12.3**
 
 ### Partner & Analytics Properties
@@ -787,7 +791,7 @@ GET /api/analytics/demand-trends
 2. **Authentication Errors**: Invalid credentials, expired tokens, insufficient permissions
 3. **Resource Errors**: Item not found, hub not found, user not found
 4. **Business Logic Errors**: Insufficient inventory, reservation conflicts, overdue restrictions
-5. **External Service Errors**: Ori AI service unavailable, translation service failure, notification delivery failure
+5. **External Service Errors**: Navi service unavailable, translation service failure, notification delivery failure
 6. **System Errors**: Database connection failures, network timeouts, unexpected exceptions
 
 ### Error Handling Strategy
@@ -814,7 +818,7 @@ All API errors should return consistent JSON structure:
 **Retry Logic:**
 - Implement exponential backoff for transient failures
 - Maximum 3 retry attempts for external service calls
-- Circuit breaker pattern for Ori AI services
+- Circuit breaker pattern for Navi services
 
 **Logging:**
 - Log all errors with context (user ID, request ID, stack trace)
@@ -848,7 +852,7 @@ The platform will use comprehensive unit testing to verify individual components
   - API integration layer
   - Utility functions
 
-**Ori AI Services:**
+**Navi Services:**
 - Framework: pytest
 - Focus areas:
   - Image classification accuracy
@@ -893,7 +897,7 @@ Integration tests will verify that components work together correctly:
 **API Integration Tests:**
 - Test complete user workflows (registration → onboarding → search → reserve → borrow → return)
 - Test multi-hub scenarios
-- Test Ori AI integration points
+- Test Navi integration points
 - Test notification delivery pipelines
 - Test partner analytics access
 
@@ -913,7 +917,7 @@ Integration tests will verify that components work together correctly:
 **Test Scenarios:**
 - Complete newcomer onboarding flow
 - Item search and reservation flow
-- Mentor matching and messaging flow
+- Lead matching and messaging flow
 - Hub steward inventory management flow
 - Partner analytics access flow
 
@@ -930,7 +934,7 @@ Integration tests will verify that components work together correctly:
 - Test database query performance
 - Identify bottlenecks and optimize
 
-**Ori AI Performance:**
+**Navi Performance:**
 - Image tagging: < 5 seconds (Property 20)
 - Question answering: < 10 seconds (Property 21)
 - Recommendation generation: < 2 seconds
@@ -972,7 +976,7 @@ Integration tests will verify that components work together correctly:
 - Property tests for inventory conservation and geographic assignment
 - Basic integration tests
 
-### Phase 2: Ori AI Integration (Month 2-3)
+### Phase 2: Navi Integration (Month 2-3)
 
 **AI Services:**
 - Image classification model deployment (ResNet50 or EfficientNet)
@@ -1006,20 +1010,20 @@ Integration tests will verify that components work together correctly:
 - Integration tests for notification delivery
 - E2E tests for feedback workflows
 
-### Phase 4: Mentorship & Multi-Hub (Month 4-5)
+### Phase 4: Lead Support & Multi-Hub (Month 4-5)
 
 **Features:**
-- Mentor matching algorithm
+- Lead matching algorithm
 - In-app messaging system
 - Multi-hub inventory coordination
 - Hub transfer functionality
 - Advanced demand forecasting with seasonal adjustments
 
 **Testing:**
-- Property tests for mentor matching criteria
+- Property tests for Lead matching criteria
 - Property tests for multi-hub inventory conservation
 - Integration tests for messaging
-- E2E tests for mentorship workflows
+- E2E tests for Lead support workflows
 
 ### Phase 5: Partner Integration & Analytics (Month 5-6)
 
@@ -1028,7 +1032,7 @@ Integration tests will verify that components work together correctly:
 - Sponsored content system
 - Privacy-safe analytics dashboard
 - Revenue tracking
-- Advanced Ori AI features (translation, guidance)
+- Advanced Navi features (translation, guidance)
 
 **Testing:**
 - Property tests for privacy aggregation
@@ -1074,7 +1078,7 @@ Integration tests will verify that components work together correctly:
 - CDN for global content delivery
 
 **AI Services:**
-- Separate service tier for Ori AI
+- Separate service tier for Navi
 - GPU instances for image classification
 - Model versioning and A/B testing capability
 
@@ -1117,7 +1121,7 @@ Integration tests will verify that components work together correctly:
 - User retention rate (7-day, 30-day)
 - Average session duration
 - Items borrowed per user per month
-- Mentor-mentee connection rate
+- Lead-newcomer connection rate
 
 ### Platform Health Metrics
 - Item availability rate (% of time items are available)

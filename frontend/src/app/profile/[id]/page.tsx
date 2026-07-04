@@ -127,7 +127,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                     {profile.is_mentor && (
                       <Badge variant="outline" className="border-amber-500 text-amber-700 dark:text-amber-400">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        Mentor
+                        Lead
                       </Badge>
                     )}
                   </div>
@@ -203,7 +203,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
                 {profile.is_mentor && (
                   <StatCard
                     icon={<Users className="w-5 h-5" />}
-                    label="Active Mentorships"
+                    label="Active Lead connections"
                     value={profile.contribution_stats.active_mentorships}
                   />
                 )}

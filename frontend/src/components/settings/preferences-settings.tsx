@@ -133,21 +133,21 @@ export function PreferencesSettings({ user }: PreferencesSettingsProps) {
         </CardContent>
       </Card>
 
-      {/* Mentorship Preferences */}
+      {/* Lead Preferences */}
       <Card>
         <CardHeader>
-          <CardTitle>Mentorship</CardTitle>
+          <CardTitle>Leads</CardTitle>
           <CardDescription>
-            Help newcomers by becoming a mentor
+            Help newcomers by becoming a trusted Lead
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5 flex-1">
-                <Label htmlFor="mentor-toggle">Available as Mentor</Label>
+                <Label htmlFor="mentor-toggle">Available as Lead</Label>
                 <p className="text-sm text-muted-foreground">
-                  Allow newcomers to request mentorship from you
+                  Allow newcomers to request guidance from you
                 </p>
               </div>
               <Switch
@@ -160,7 +160,7 @@ export function PreferencesSettings({ user }: PreferencesSettingsProps) {
 
             {preferences.is_mentor && (
               <div className="rounded-lg bg-muted p-4 space-y-2">
-                <p className="text-sm font-medium">As a mentor, you can:</p>
+                <p className="text-sm font-medium">As a Lead, you can:</p>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li className="flex items-start gap-2">
                     <span>•</span>
@@ -176,7 +176,7 @@ export function PreferencesSettings({ user }: PreferencesSettingsProps) {
                   </li>
                   <li className="flex items-start gap-2">
                     <span>•</span>
-                    <span>Earn community recognition badges</span>
+                    <span>Earn Loop recognition badges</span>
                   </li>
                 </ul>
               </div>
@@ -184,7 +184,7 @@ export function PreferencesSettings({ user }: PreferencesSettingsProps) {
 
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Mentorship Preference
+              Save Lead Preference
             </Button>
           </form>
         </CardContent>

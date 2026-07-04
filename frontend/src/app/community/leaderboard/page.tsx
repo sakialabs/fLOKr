@@ -74,7 +74,7 @@ export default function LeaderboardPage() {
       setHighlights([]) // Set empty array on error
       toast({
         title: 'Error',
-        description: 'Failed to load community highlights',
+        description: 'Failed to load Loop highlights',
         variant: 'destructive'
       })
     } finally {
@@ -110,10 +110,10 @@ export default function LeaderboardPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-yellow-500" />
-            Community Highlights
+            Loop Highlights
           </h1>
           <p className="text-muted-foreground mt-2">
-            Celebrating our community&apos;s kindness, generosity, and mutual support
+            Celebrating useful Signals, generosity, and mutual support
           </p>
         </div>
 
@@ -129,8 +129,8 @@ export default function LeaderboardPage() {
                 We celebrate without ranking
               </p>
               <p className="text-teal-700 dark:text-teal-300">
-                No leaderboards, no competition. Instead, we shine a light on recent acts of kindness, 
-                contributions, and community spirit. Everyone here matters equally.
+                No leaderboards, no competition. Instead, we shine a light on recent acts of kindness,
+                helpful Signals, and steady support. Everyone here matters equally.
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function LeaderboardPage() {
                           <Sparkles className="w-4 h-4 text-yellow-500" />
                         </div>
                         <p className="text-sm text-muted-foreground">
-                          {highlight.gentle_note || 'Contributing to the community'}
+                          {highlight.gentle_note || 'Contributing to the Loop'}
                         </p>
                       </div>
                     </Link>
@@ -221,14 +221,14 @@ export default function LeaderboardPage() {
             <CardContent>
               <div className="text-2xl font-bold">84</div>
               <p className="text-xs text-muted-foreground">
-                Mentorship relationships formed
+                Lead connections formed
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Community Growth</CardTitle>
+              <CardTitle className="text-sm font-medium">Loop Growth</CardTitle>
               <Sparkles className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>

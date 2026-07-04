@@ -7,6 +7,7 @@ import { AppHeader } from '@/components/layout/app-header'
 import { Footer } from '@/components/layout/footer'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { GITHUB_ISSUES_URL } from '@/lib/project-links'
 
 export default function TermsOfServicePage() {
   return (
@@ -55,7 +56,7 @@ export default function TermsOfServicePage() {
                   <li><strong>Treat Everyone with Respect:</strong> No discrimination, harassment, or abuse based on race, religion, nationality, gender, or any other characteristic</li>
                   <li><strong>Be Honest:</strong> Provide accurate information in your profile and listings</li>
                   <li><strong>Stay Safe:</strong> Report suspicious activity, protect your personal information, and meet in public spaces for exchanges</li>
-                  <li><strong>Give Back:</strong> Help others when you can—whether by sharing resources, offering mentorship, or simply being kind</li>
+                  <li><strong>Give Back:</strong> Help others when you can, whether by sharing resources, becoming a Lead, or simply being kind</li>
                 </ul>
               </div>
 
@@ -75,7 +76,7 @@ export default function TermsOfServicePage() {
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li>You own the content you post, but you grant us permission to display it on the platform</li>
                   <li>No spam, scams, or misleading information</li>
-                  <li>Ori (our AI assistant) learns from your interactions to provide better support—all conversations are private</li>
+                  <li>Navi uses your interactions to provide better support, and conversations remain private</li>
                 </ul>
               </div>
 
@@ -108,7 +109,7 @@ export default function TermsOfServicePage() {
                 </p>
                 <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
                   <li>We&apos;re not responsible for disputes between users or damage/loss of items during transfers</li>
-                  <li>Ori provides helpful guidance, but it&apos;s not a substitute for professional advice (legal, medical, financial, etc.)</li>
+                  <li>Navi provides helpful guidance, but it&apos;s not a substitute for professional advice. Rights-heavy questions should go to Lexi inside Shifts.</li>
                   <li>We make no guarantees about item availability or platform uptime</li>
                 </ul>
                 <p className="text-muted-foreground mt-3">
@@ -126,7 +127,7 @@ export default function TermsOfServicePage() {
               <div className="pt-6 border-t">
                 <p className="text-sm text-muted-foreground">
                   <strong>Last Updated:</strong> December 2025<br />
-                  Questions? Email <a href="mailto:legal@flokr.org" className="text-primary hover:underline">legal@flokr.org</a>
+                  Questions? Open an issue in the <a href={GITHUB_ISSUES_URL} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">fLOKr GitHub repo</a>
                 </p>
               </div>
             </div>

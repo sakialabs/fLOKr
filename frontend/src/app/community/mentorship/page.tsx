@@ -49,7 +49,7 @@ export default function MentorshipPage() {
       setMyConnections([])
       toast({
         title: 'Error',
-        description: 'Failed to load mentorship data',
+        description: 'Failed to load Lead data',
         variant: 'destructive'
       })
     } finally {
@@ -62,15 +62,15 @@ export default function MentorshipPage() {
     try {
       await communityService.requestMentorship(mentorId)
       toast({
-        title: '🤝 Request Sent!',
-        description: 'The mentor will review your request soon'
+        title: 'Request sent',
+        description: 'The Lead will review your request soon'
       })
       fetchData()
     } catch (error) {
       console.error('Error requesting mentorship:', error)
       toast({
         title: 'Error',
-        description: 'Failed to send mentorship request',
+        description: 'Failed to send Lead request',
         variant: 'destructive'
       })
     } finally {
@@ -88,15 +88,15 @@ export default function MentorshipPage() {
     try {
       await communityService.acceptMentorship(connectionId)
       toast({
-        title: '✅ Mentorship Accepted!',
-        description: 'Your mentorship journey begins'
+        title: 'Lead request accepted',
+        description: 'Your support connection begins'
       })
       fetchData()
     } catch (error) {
       console.error('Error accepting mentorship:', error)
       toast({
         title: 'Error',
-        description: 'Failed to accept mentorship',
+        description: 'Failed to accept Lead request',
         variant: 'destructive'
       })
     }
@@ -114,7 +114,7 @@ export default function MentorshipPage() {
       console.error('Error declining mentorship:', error)
       toast({
         title: 'Error',
-        description: 'Failed to decline mentorship',
+        description: 'Failed to decline Lead request',
         variant: 'destructive'
       })
     }
@@ -150,10 +150,10 @@ export default function MentorshipPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Users className="h-8 w-8" />
-            Mentorship
+            Leads
           </h1>
           <p className="text-muted-foreground mt-2">
-            Connect with experienced community members who can guide your journey
+            Connect with trusted helpers who can guide your journey
           </p>
         </div>
 
@@ -169,8 +169,8 @@ export default function MentorshipPage() {
                 Support & Guidance
               </p>
               <p className="text-teal-700 dark:text-teal-300">
-                Mentors are experienced community members who volunteer their time to help newcomers 
-                settle in, navigate resources, and build confidence.
+                Leads are trusted helpers who volunteer time to help newcomers settle in, navigate
+                resources, and build confidence.
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function MentorshipPage() {
 
         <Tabs defaultValue="find">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="find">Find Mentors</TabsTrigger>
+            <TabsTrigger value="find">Find Leads</TabsTrigger>
             <TabsTrigger value="active">
               Active ({activeConnections.length})
             </TabsTrigger>
@@ -298,7 +298,7 @@ export default function MentorshipPage() {
                                 ) : (
                                   <>
                                     <Send className="h-4 w-4 mr-2" />
-                                    {requesting === mentor.id ? 'Sending...' : 'Request Mentorship'}
+                                    {requesting === mentor.id ? 'Sending...' : 'Request Lead'}
                                   </>
                                 )}
                               </Button>
@@ -315,7 +315,7 @@ export default function MentorshipPage() {
                 <CardContent className="p-8 text-center">
                   <div className="text-4xl mb-2">🌱</div>
                   <p className="text-muted-foreground">
-                    No mentors available at the moment. Check back soon!
+                    No Leads available at the moment. Check back soon!
                   </p>
                 </CardContent>
               </Card>
@@ -349,7 +349,7 @@ export default function MentorshipPage() {
                                 {otherPerson.full_name}
                               </Link>
                               <p className="text-sm text-muted-foreground">
-                                {isMentor ? 'You are mentoring' : 'Your mentor'}
+                                {isMentor ? 'You are a Lead for this newcomer' : 'Your Lead'}
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 Since {new Date(connection.start_date || connection.created_at).toLocaleDateString()}
@@ -373,7 +373,7 @@ export default function MentorshipPage() {
                 <CardContent className="p-8 text-center">
                   <div className="text-4xl mb-2">🤝</div>
                   <p className="text-muted-foreground">
-                    No active mentorship connections yet
+                    No active Lead connections yet
                   </p>
                 </CardContent>
               </Card>
@@ -407,7 +407,7 @@ export default function MentorshipPage() {
                                 {otherPerson.full_name}
                               </Link>
                               <p className="text-sm text-muted-foreground">
-                                {isMentor ? 'Wants you as a mentor' : 'Request sent'}
+                                {isMentor ? 'Wants you as a Lead' : 'Request sent'}
                               </p>
                               <p className="text-xs text-muted-foreground">
                                 {new Date(connection.created_at).toLocaleDateString()}

@@ -12,7 +12,6 @@ import {
   Calendar,
   Package,
   MapPin,
-  Users,
   Settings,
   Menu,
   X,
@@ -20,7 +19,6 @@ import {
   Shield,
   BarChart3,
   ClipboardCheck,
-  Sparkles,
   MessageSquare,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
@@ -33,13 +31,11 @@ interface LeftSidebarProps {
 }
 
 const baseNavItems = [
-  { href: '/home', label: 'My Home', icon: Home, roles: ['all'] },
-  { href: '/reservations', label: 'My Reservations', icon: Calendar, roles: ['all'] },
-  { href: '/items', label: 'Available Items', icon: Package, roles: ['all'] },
+  { href: '/home', label: 'Home', icon: Home, roles: ['all'] },
+  { href: '/reservations', label: 'Reservations', icon: Calendar, roles: ['all'] },
+  { href: '/items', label: 'Items', icon: Package, roles: ['all'] },
   { href: '/hubs', label: 'Hubs', icon: MapPin, roles: ['all'] },
-  { href: '/community/leaderboard', label: 'Community Highlights', icon: Sparkles, roles: ['all'] },
-  { href: '/community/mentorship', label: 'Mentorship', icon: Users, roles: ['all'] },
-  { href: '/community/feedback', label: 'Feedback', icon: MessageSquare, roles: ['all'] },
+  { href: '/loop', label: 'Loop', icon: MessageSquare, roles: ['all'] },
 ]
 
 const stewardNavItems = [
@@ -201,7 +197,9 @@ export function LeftSidebar({ collapsed, onToggle }: LeftSidebarProps) {
           {/* Base Navigation */}
           {baseNavItems.map((item) => {
             const Icon = item.icon
-            const isActive = pathname === item.href
+            const isActive =
+              pathname === item.href ||
+              (item.href === '/loop' && (pathname === '/community' || pathname.startsWith('/community/')))
             
             return (
               <button

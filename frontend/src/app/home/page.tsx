@@ -14,28 +14,30 @@ import { api } from '@/lib/api'
 
 interface Reservation {
   id: string
-  item: {
-    name: string
-  }
+  item?: { name?: string } | string | null
+  item_details?: { name?: string } | null
+  item_name?: string
   expected_return_date: string
 }
 
 interface DashboardData {
-  summary: {
-    upcoming_returns_count: number
-    overdue_count: number
-    ready_for_pickup_count: number
-    active_reservations_count: number
-    total_borrowed: number
-    on_time_returns: number
-  }
+  summary: DashboardSummary
   active_reservations: Reservation[]
   upcoming_returns: Reservation[]
   pending_reservations: Reservation[]
   overdue_items: Reservation[]
 }
 
-interface OriSuggestion {
+interface DashboardSummary {
+  upcoming_returns_count: number
+  overdue_count: number
+  ready_for_pickup_count: number
+  active_reservations_count: number
+  total_borrowed: number
+  on_time_returns: number
+}
+
+interface NaviSuggestion {
   item: {
     id: string
     name: string
@@ -46,11 +48,66 @@ interface OriSuggestion {
   reasons: string[]
 }
 
+const emptyDashboardSummary: DashboardSummary = {
+  upcoming_returns_count: 0,
+  overdue_count: 0,
+  ready_for_pickup_count: 0,
+  active_reservations_count: 0,
+  total_borrowed: 0,
+  on_time_returns: 0,
+}
+
+const emptyDashboardData: DashboardData = {
+  summary: emptyDashboardSummary,
+  active_reservations: [],
+  upcoming_returns: [],
+  pending_reservations: [],
+  overdue_items: [],
+}
+
+const normalizeDashboardData = (data?: Partial<DashboardData> | null): DashboardData => ({
+  summary: {
+    ...emptyDashboardSummary,
+    ...data?.summary,
+  },
+  active_reservations: Array.isArray(data?.active_reservations) ? data.active_reservations : [],
+  upcoming_returns: Array.isArray(data?.upcoming_returns) ? data.upcoming_returns : [],
+  pending_reservations: Array.isArray(data?.pending_reservations) ? data.pending_reservations : [],
+  overdue_items: Array.isArray(data?.overdue_items) ? data.overdue_items : [],
+})
+
+const normalizeNaviSuggestions = (data: unknown): NaviSuggestion[] => {
+  if (!Array.isArray(data)) {
+    return []
+  }
+
+  return data.filter((suggestion): suggestion is NaviSuggestion => {
+    if (!suggestion || typeof suggestion !== 'object') {
+      return false
+    }
+
+    const item = (suggestion as Partial<NaviSuggestion>).item
+    return Boolean(item?.id && item.name && item.category)
+  })
+}
+
+const getReservationItemName = (reservation: Reservation) => {
+  if (reservation.item_details?.name) {
+    return reservation.item_details.name
+  }
+
+  if (typeof reservation.item === 'object' && reservation.item?.name) {
+    return reservation.item.name
+  }
+
+  return reservation.item_name || 'Reserved item'
+}
+
 export default function HomePage() {
   const router = useRouter()
   const { isAuthenticated, loading } = useSelector((state: RootState) => state.auth)
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null)
-  const [oriSuggestions, setOriSuggestions] = useState<OriSuggestion[]>([])
+  const [dashboardData, setDashboardData] = useState<DashboardData>(emptyDashboardData)
+  const [naviSuggestions, setNaviSuggestions] = useState<NaviSuggestion[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -62,27 +119,27 @@ export default function HomePage() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchDashboardData()
-      fetchOriSuggestions()
+      fetchNaviSuggestions()
     }
   }, [isAuthenticated])
 
   const fetchDashboardData = async () => {
     try {
-      const response = await api.get('/auth/dashboard/')
-      setDashboardData(response.data)
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
+      const response = await api.get<Partial<DashboardData>>('/auth/dashboard/')
+      setDashboardData(normalizeDashboardData(response.data))
+    } catch {
+      setDashboardData(emptyDashboardData)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const fetchOriSuggestions = async () => {
+  const fetchNaviSuggestions = async () => {
     try {
       const response = await api.get('/ori/recommendations/?limit=3')
-      setOriSuggestions(response.data)
-    } catch (error) {
-      console.error('Failed to fetch Ori suggestions:', error)
+      setNaviSuggestions(normalizeNaviSuggestions(response.data))
+    } catch {
+      setNaviSuggestions([])
     }
   }
 
@@ -90,16 +147,7 @@ export default function HomePage() {
     return null
   }
 
-  const { summary } = dashboardData || { 
-    summary: {
-      upcoming_returns_count: 0,
-      overdue_count: 0,
-      ready_for_pickup_count: 0,
-      active_reservations_count: 0,
-      total_borrowed: 0,
-      on_time_returns: 0
-    }
-  }
+  const summary = dashboardData.summary
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -168,15 +216,15 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Ori Suggestions */}
+              {/* Navi Suggestions */}
               <div className="flex items-start gap-3 min-w-0">
                 <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-[#D97A5B] to-[#C26A52] flex items-center justify-center flex-shrink-0">
                   <Sparkles className="h-5 w-5 text-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">Ori Suggests</p>
+                  <p className="text-sm font-medium truncate">Navi Suggests</p>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                    {oriSuggestions.length} personalized recommendations
+                    {naviSuggestions.length} personalized recommendations
                   </p>
                 </div>
               </div>
@@ -207,7 +255,7 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <Package className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <p className="font-medium truncate">{reservation.item.name}</p>
+                      <p className="font-medium truncate">{getReservationItemName(reservation)}</p>
                       <p className="text-xs text-muted-foreground truncate">Due: {new Date(reservation.expected_return_date).toLocaleDateString()}</p>
                     </div>
                   </div>
@@ -218,8 +266,8 @@ export default function HomePage() {
           </Card>
         )}
 
-        {/* Ori Personal Suggestions */}
-        {oriSuggestions.length > 0 && (
+        {/* Navi Personal Suggestions */}
+        {naviSuggestions.length > 0 && (
           <motion.div variants={itemVariants}>
           <Card>
             <CardHeader>
@@ -227,11 +275,11 @@ export default function HomePage() {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-[#D97A5B] to-[#C26A52] flex items-center justify-center flex-shrink-0">
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
-                <CardTitle className="text-lg truncate">Ori&apos;s Suggestions for You</CardTitle>
+                <CardTitle className="text-lg truncate">Navi&apos;s Suggestions for You</CardTitle>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">
-              {oriSuggestions.map((suggestion: OriSuggestion, index: number) => (
+              {naviSuggestions.map((suggestion: NaviSuggestion, index: number) => (
                 <div key={index} className="p-3 bg-muted/30 rounded-lg min-w-0">
                   <div className="flex items-start justify-between gap-3 min-w-0">
                     <div className="min-w-0 flex-1">
@@ -271,11 +319,11 @@ export default function HomePage() {
                 <span className="truncate">Find Nearby Hub</span>
               </Button>
               <Button variant="outline" className="justify-start min-w-0" onClick={() => {
-                const event = new CustomEvent('openOriChat')
+                const event = new CustomEvent('openNaviChat')
                 window.dispatchEvent(event)
               }}>
                 <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" />
-                <span className="truncate">Ask Ori</span>
+                <span className="truncate">Ask Navi</span>
               </Button>
             </div>
           </CardContent>

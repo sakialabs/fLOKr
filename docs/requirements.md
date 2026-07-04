@@ -2,7 +2,7 @@
 
 ## Introduction
 
-fLOKr is a digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items (clothing, food, tools) while connecting with local mentors and community hubs. The platform integrates Ori AI to provide intelligent item tagging, personalized recommendations, demand forecasting, multilingual support, and newcomer guidance. The initial pilot will launch in Hamilton with 1-2 community hubs, with plans to scale city-to-city and eventually globally.
+fLOKr is a digital community hub platform designed to support newcomers in unfamiliar cities by enabling them to borrow, share, and reserve essential items (clothing, food, tools) while connecting with Leads, Circles, Crews, and community hubs. The platform integrates Navi to provide intelligent item tagging, personalized recommendations, demand forecasting, multilingual support, and newcomer guidance. The initial pilot will launch in Hamilton with 1-2 community hubs, with plans to scale city-to-city and eventually globally.
 
 ## Glossary
 
@@ -11,7 +11,15 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 - **Community Member**: A local resident who contributes items, time, or expertise to support newcomers
 - **Hub**: A physical community location that stores inventory and facilitates item exchanges
 - **Steward**: A trusted community member with elevated permissions to manage hub operations and resolve disputes
-- **Ori AI**: The artificial intelligence system that provides auto-tagging, recommendations, forecasting, translations, and guidance
+- **Loop**: The main community feed where members post Signals
+- **Signals**: Updates, asks, offers, welcomes, hub updates, and support requests
+- **Circles**: Recurring communities/groups around shared needs, places, or identities
+- **Crews**: Action teams that coordinate tasks, support, and Moves
+- **Leads**: Trusted helpers and community leaders who guide and support members
+- **Moves**: Local workshops, drives, meetups, and actions people can join
+- **Shifts**: Work support for job leads, wage notes, workplace red flags, and rights guidance
+- **Navi**: The AI community guide that provides auto-tagging, recommendations, forecasting, translations, and guidance
+- **Lexi**: The rights/legal specialist used inside Shifts for worker, tenant, lease, and fine-print support
 - **Inventory Item**: Any physical resource (clothing, food, tool, etc.) available for borrowing or sharing through the platform
 - **Reservation**: A time-bound commitment to borrow a specific inventory item
 - **Badge**: A digital recognition awarded to users for positive community contributions
@@ -29,7 +37,7 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 
 1. WHEN a newcomer provides registration information (name, email, phone, arrival date, languages spoken), THE fLOKr Platform SHALL create a user account with newcomer role
 2. WHEN a newcomer completes the onboarding questionnaire about their needs (clothing sizes, dietary restrictions, skill interests), THE fLOKr Platform SHALL store preference data for personalization
-3. WHEN a newcomer selects their preferred language during onboarding, THE fLOKr Platform SHALL set the interface language and enable Ori AI translation services
+3. WHEN a newcomer selects their preferred language during onboarding, THE fLOKr Platform SHALL set the interface language and enable Navi translation services
 4. WHEN a newcomer account is created, THE fLOKr Platform SHALL assign the user to the nearest hub based on their address
 5. WHEN onboarding is completed, THE fLOKr Platform SHALL display a personalized welcome screen with recommended first actions
 
@@ -41,7 +49,7 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 
 1. WHEN a community member provides registration information (name, email, phone, address), THE fLOKr Platform SHALL create a user account with community member role
 2. WHEN a community member uploads photos and descriptions of items they wish to donate, THE fLOKr Platform SHALL create pending inventory entries awaiting hub verification
-3. WHEN a community member indicates availability to mentor newcomers, THE fLOKr Platform SHALL flag their profile for mentor matching
+3. WHEN a community member indicates availability to guide newcomers, THE fLOKr Platform SHALL flag their profile for Lead matching
 4. WHEN a community member completes five successful item contributions, THE fLOKr Platform SHALL award a contributor badge
 5. WHEN a community member account is created, THE fLOKr Platform SHALL send a welcome notification with contribution guidelines
 
@@ -52,7 +60,7 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 #### Acceptance Criteria
 
 1. WHEN a steward receives a physical item donation, THE fLOKr Platform SHALL allow the steward to create an inventory entry with photos, category, condition, and quantity
-2. WHEN a steward uploads an item photo, THE Ori AI SHALL automatically suggest tags, category, and condition rating within five seconds
+2. WHEN a steward uploads an item photo, THE Navi service SHALL automatically suggest tags, category, and condition rating within five seconds
 3. WHEN an item is borrowed from the hub, THE fLOKr Platform SHALL update the inventory quantity and record the transaction timestamp
 4. WHEN an item is returned to the hub, THE fLOKr Platform SHALL update the inventory quantity and prompt the steward to verify item condition
 5. WHEN an item becomes damaged or unavailable, THE fLOKr Platform SHALL allow the steward to mark it as inactive and remove it from borrowable inventory
@@ -71,15 +79,15 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 
 ### Requirement 5
 
-**User Story:** As a newcomer, I want Ori AI to recommend items and resources based on my needs, so that I can discover helpful resources I might not know to search for.
+**User Story:** As a newcomer, I want Navi to recommend items and resources based on my needs, so that I can discover helpful resources I might not know to search for.
 
 #### Acceptance Criteria
 
-1. WHEN a newcomer views their dashboard, THE Ori AI SHALL display personalized item recommendations based on user preferences, season, and community patterns
-2. WHEN a newcomer asks Ori AI a question in natural language, THE Ori AI SHALL provide a relevant answer within ten seconds using FAQ knowledge and platform data
-3. WHEN a newcomer's profile indicates recent arrival, THE Ori AI SHALL proactively recommend essential items (winter coat, kitchen basics) appropriate to the current season
-4. WHEN a newcomer browses items in a category, THE Ori AI SHALL suggest complementary items frequently borrowed together
-5. WHEN a newcomer speaks a non-English language, THE Ori AI SHALL provide recommendations and guidance in their preferred language
+1. WHEN a newcomer views their dashboard, THE Navi service SHALL display personalized item recommendations based on user preferences, season, and community patterns
+2. WHEN a newcomer asks Navi a question in natural language, THE Navi service SHALL provide a relevant answer within ten seconds using FAQ knowledge and platform data
+3. WHEN a newcomer's profile indicates recent arrival, THE Navi service SHALL proactively recommend essential items (winter coat, kitchen basics) appropriate to the current season
+4. WHEN a newcomer browses items in a category, THE Navi service SHALL suggest complementary items frequently borrowed together
+5. WHEN a newcomer speaks a non-English language, THE Navi service SHALL provide recommendations and guidance in their preferred language
 
 ### Requirement 6
 
@@ -87,10 +95,10 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 
 #### Acceptance Criteria
 
-1. WHEN a steward views the hub dashboard, THE Ori AI SHALL display predicted demand for item categories over the next thirty days based on historical patterns and seasonal trends
-2. WHEN demand for a specific item category exceeds available inventory by fifty percent, THE Ori AI SHALL alert the steward with a suggested donation request
-3. WHEN a new wave of newcomers is registered in a hub's area, THE Ori AI SHALL adjust demand forecasts to reflect increased need
-4. WHEN seasonal changes occur (e.g., winter approaching), THE Ori AI SHALL increase demand forecasts for seasonal items (winter clothing, heating equipment)
+1. WHEN a steward views the hub dashboard, THE Navi service SHALL display predicted demand for item categories over the next thirty days based on historical patterns and seasonal trends
+2. WHEN demand for a specific item category exceeds available inventory by fifty percent, THE Navi service SHALL alert the steward with a suggested donation request
+3. WHEN a new wave of newcomers is registered in a hub's area, THE Navi service SHALL adjust demand forecasts to reflect increased need
+4. WHEN seasonal changes occur (e.g., winter approaching), THE Navi service SHALL increase demand forecasts for seasonal items (winter clothing, heating equipment)
 5. WHEN a steward reviews forecast accuracy monthly, THE fLOKr Platform SHALL display actual versus predicted demand metrics for continuous improvement
 
 ### Requirement 7
@@ -99,7 +107,7 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 
 #### Acceptance Criteria
 
-1. WHEN a user completes specific contribution milestones (five items donated, ten mentoring sessions), THE fLOKr Platform SHALL award corresponding achievement badges
+1. WHEN a user completes specific contribution milestones (five items donated, ten Lead support sessions), THE fLOKr Platform SHALL award corresponding achievement badges
 2. WHEN a user earns a badge, THE fLOKr Platform SHALL display a celebration notification and update their public profile
 3. WHEN a user views another member's profile, THE fLOKr Platform SHALL display all earned badges with descriptions
 4. WHEN a user consistently contributes over six months, THE fLOKr Platform SHALL award a community champion badge
@@ -150,20 +158,20 @@ fLOKr is a digital community hub platform designed to support newcomers in unfam
 1. WHEN a partner organization subscribes to the platform, THE fLOKr Platform SHALL create a partner account with enhanced visibility options
 2. WHEN a partner sponsors an item category, THE fLOKr Platform SHALL display the partner's branding on relevant item listings and search results
 3. WHEN a partner accesses the analytics dashboard, THE fLOKr Platform SHALL display privacy-safe aggregated insights (demand trends, popular categories, geographic distribution) without exposing individual user data
-4. WHEN a partner lists resources or services, THE Ori AI SHALL recommend these resources to relevant newcomers based on their needs
+4. WHEN a partner lists resources or services, THE Navi service SHALL recommend these resources to relevant newcomers based on their needs
 5. WHEN a partner subscription expires, THE fLOKr Platform SHALL remove sponsored content and restrict access to premium analytics
 
 ### Requirement 12
 
-**User Story:** As a newcomer, I want to connect with local mentors who can guide me, so that I can navigate my new city with personal support.
+**User Story:** As a newcomer, I want to connect with local Leads who can guide me, so that I can navigate my new city with personal support.
 
 #### Acceptance Criteria
 
-1. WHEN a newcomer requests mentor matching, THE fLOKr Platform SHALL suggest mentors based on shared languages, interests, and geographic proximity
-2. WHEN a mentor accepts a mentorship request, THE fLOKr Platform SHALL create a connection and enable in-app messaging between mentor and mentee
-3. WHEN a newcomer and mentor exchange messages, THE fLOKr Platform SHALL provide real-time chat functionality with message history
-4. WHEN a mentorship relationship reaches three months, THE fLOKr Platform SHALL prompt both parties to provide feedback on the experience
-5. WHEN a mentor completes five successful mentorship relationships, THE fLOKr Platform SHALL award a mentor excellence badge
+1. WHEN a newcomer requests Lead matching, THE fLOKr Platform SHALL suggest Leads based on shared languages, interests, and geographic proximity
+2. WHEN a Lead accepts a support request, THE fLOKr Platform SHALL create a connection and enable in-app messaging between the Lead and newcomer
+3. WHEN a newcomer and Lead exchange messages, THE fLOKr Platform SHALL provide real-time chat functionality with message history
+4. WHEN a Lead relationship reaches three months, THE fLOKr Platform SHALL prompt both parties to provide feedback on the experience
+5. WHEN a Lead completes five successful support relationships, THE fLOKr Platform SHALL award a Lead excellence badge
 
 ### Requirement 13
 

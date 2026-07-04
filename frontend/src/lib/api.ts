@@ -1,6 +1,25 @@
 import axios from 'axios'
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    _retry?: boolean
+    skipAuthRedirect?: boolean
+  }
+}
+
+export const normalizeApiBaseUrl = (url: string) => {
+  const trimmedUrl = url.trim().replace(/\/+$/, '')
+
+  if (!trimmedUrl) {
+    return '/api'
+  }
+
+  return trimmedUrl.endsWith('/api') ? trimmedUrl : `${trimmedUrl}/api`
+}
+
+export const API_BASE_URL = normalizeApiBaseUrl(
+  process.env.NEXT_PUBLIC_API_URL || '/api'
+)
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -35,7 +54,12 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config
 
     // If 401 and we haven't retried yet, try to refresh token
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry &&
+      !originalRequest.skipAuthRedirect
+    ) {
       originalRequest._retry = true
 
       if (typeof window !== 'undefined') {

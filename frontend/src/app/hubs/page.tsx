@@ -262,7 +262,7 @@ export default function HubsPage() {
                         onClick={() => router.push('/community/mentorship')}
                       >
                         <Users className="h-4 w-4 mr-2" />
-                        Find Mentors
+                        Find Leads
                       </Button>
                     </CardContent>
                   </Card>

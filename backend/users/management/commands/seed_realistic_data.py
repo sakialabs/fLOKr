@@ -289,11 +289,11 @@ class Command(BaseCommand):
             ('First Share', 'Shared your first item with the community', 'contribution', {'items_shared': 1}),
             ('Generous Giver', 'Shared 5+ items with neighbors', 'contribution', {'items_shared': 5}),
             ('Helpful Neighbor', 'Completed 10 successful borrows', 'community', {'successful_borrows': 10}),
-            ('Community Champion', 'Active member for 6 months', 'milestone', {'membership_days': 180}),
-            ('Mentorship Star', 'Actively mentoring a newcomer', 'mentorship', {'active_mentorships': 1}),
-            ('Welcome Ambassador', 'Welcomed 5 new members', 'community', {'welcomes_sent': 5}),
+            ('Loop Builder', 'Posted useful Signals and helped neighbors find support', 'milestone', {'membership_days': 180}),
+            ('Trusted Lead', 'Actively guiding a newcomer through their first steps', 'mentorship', {'active_mentorships': 1}),
+            ('Circle Welcomer', 'Welcomed 5 new members into a Circle', 'community', {'welcomes_sent': 5}),
             ('On-Time Returner', '100% on-time return rate', 'milestone', {'on_time_returns': 10}),
-            ('Hub Supporter', 'Volunteered at 3+ hub events', 'contribution', {'events_attended': 3}),
+            ('Move Supporter', 'Volunteered at 3+ hub Moves', 'contribution', {'events_attended': 3}),
         ]
         
         badges = []
@@ -333,15 +333,15 @@ class Command(BaseCommand):
         self.stdout.write(f'  ✓ Awarded {awarded} badges')
 
     def _create_mentorship_connections(self, fake, users):
-        """Create mentorship connections"""
-        self.stdout.write('Creating mentorship connections...')
+        """Create Lead support connections"""
+        self.stdout.write('Creating Lead support connections...')
         
         newcomers = [u for u in users if u.role == 'newcomer']
         mentors = [u for u in users if u.role in ['community_member', 'steward']]
         
         connections = []
         
-        # Active mentorships
+        # Active Lead support relationships
         for _ in range(min(8, len(newcomers))):
             if not mentors:
                 break
@@ -368,7 +368,7 @@ class Command(BaseCommand):
                     created_at=timezone.now() - timedelta(days=days_ago)
                 )
         
-        # Requested mentorships
+        # Requested Lead support relationships
         for _ in range(3):
             if not mentors or not newcomers:
                 break
@@ -378,26 +378,26 @@ class Command(BaseCommand):
                 status='requested'
             )
         
-        self.stdout.write(f'  ✓ Created {len(connections)} active mentorships')
+        self.stdout.write(f'  ✓ Created {len(connections)} active Lead support relationships')
 
     def _create_events(self, fake, hubs, users):
-        """Create hub events"""
-        self.stdout.write('Creating events...')
+        """Create hub Moves"""
+        self.stdout.write('Creating Moves...')
         
         event_templates = [
-            ('Community Dinner', 'community_dinner', 'Join us for a warm meal and conversation. All community members welcome.'),
-            ('Newcomer Welcome Session', 'meeting', 'Meet other newcomers, learn about hub resources, and ask questions.'),
-            ('Skill Share Workshop', 'workshop', 'Learn a new skill from community members. This week: basic home repairs.'),
-            ('Volunteer Day', 'volunteer', 'Help organize the hub, sort donations, and prepare for the week ahead.'),
-            ('Community Celebration', 'celebration', 'Celebrating our community achievements this quarter.'),
-            ('Resource Fair', 'meeting', 'Connect with local services, partners, and community resources.'),
+            ('Friday Dinner Move', 'community_dinner', 'Join a warm meal, meet your Circle, and help the crew set up if you can.'),
+            ('Newcomer Circle Welcome', 'meeting', 'Meet other newcomers, learn about hub resources, and ask questions.'),
+            ('Skill Share Move', 'workshop', 'Learn a new skill from neighbors. This week: basic home repairs.'),
+            ('Sorting Crew Move', 'volunteer', 'Help organize the hub, sort donations, and prepare for the week ahead.'),
+            ('Loop Celebration', 'celebration', 'Celebrating useful Signals, helpful Crews, and trusted Leads this quarter.'),
+            ('Resource Fair Move', 'meeting', 'Connect with local services, partner tables, and neighborhood support.'),
         ]
         
         events = []
         stewards = [u for u in users if u.role == 'steward']
         
         for hub in hubs:
-            # Create 2-4 events per hub (past and future)
+            # Create 2-4 Moves per hub (past and future)
             for _ in range(random.randint(2, 4)):
                 template = random.choice(event_templates)
                 days_offset = random.randint(-30, 60)
@@ -415,7 +415,7 @@ class Command(BaseCommand):
                 )
                 events.append(event)
         
-        self.stdout.write(f'  ✓ Created {len(events)} events')
+        self.stdout.write(f'  ✓ Created {len(events)} Moves')
 
     def _create_announcements(self, fake, hubs, users):
         """Create hub announcements"""

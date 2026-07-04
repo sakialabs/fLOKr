@@ -35,7 +35,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
     }
     return false
   })
-  const [shouldOpenOriChat, setShouldOpenOriChat] = useState(false)
+  const [shouldOpenNaviChat, setShouldOpenNaviChat] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
@@ -69,12 +69,12 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
   }, [])
 
   useEffect(() => {
-    const handleOpenOriChat = () => {
-      setShouldOpenOriChat(true)
-      setTimeout(() => setShouldOpenOriChat(false), 100)
+    const handleOpenNaviChat = () => {
+      setShouldOpenNaviChat(true)
+      setTimeout(() => setShouldOpenNaviChat(false), 100)
     }
-    window.addEventListener('openOriChat', handleOpenOriChat)
-    return () => window.removeEventListener('openOriChat', handleOpenOriChat)
+    window.addEventListener('openNaviChat', handleOpenNaviChat)
+    return () => window.removeEventListener('openNaviChat', handleOpenNaviChat)
   }, [])
 
   // Global search functionality
@@ -274,7 +274,7 @@ export function AppLayout({ children, breadcrumbOverride }: AppLayoutProps) {
       <RightSidebar 
         collapsed={rightCollapsed} 
         onToggle={() => setRightCollapsed(!rightCollapsed)}
-        shouldOpenOriChat={shouldOpenOriChat}
+        shouldOpenNaviChat={shouldOpenNaviChat}
       />
     </div>
   )

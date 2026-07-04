@@ -167,7 +167,7 @@
 - [x] 9. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [x] 10. Ori AI - Image tagging service
+- [x] 10. Navi service - Image tagging service
   - Set up separate AI service module/microservice
   - Integrate pre-trained image classification model (ResNet50 or EfficientNet)
   - Create image preprocessing pipeline
@@ -185,7 +185,7 @@
   - Test invalid image handling
   - _Requirements: 3.2_
 
-- [x] 11. Ori AI - Recommendation engine
+- [x] 11. Navi service - Recommendation engine
   - Create recommendation service with collaborative filtering
   - Implement user preference-based recommendations
   - Add seasonal recommendation logic
@@ -201,7 +201,7 @@
   - **Property 18: Complementary item suggestions**
   - **Validates: Requirements 5.4**
 
-- [x] 12. Ori AI - Natural language Q&A system
+- [x] 12. Navi service - Natural language Q&A system
   - Create FAQ knowledge base model
   - Implement semantic search using sentence transformers
   - Create question answering endpoint
@@ -213,7 +213,7 @@
   - **Property 21: Natural language question answering**
   - **Validates: Requirements 5.2**
 
-- [x] 13. Ori AI - Translation service
+- [x] 13. Navi service - Translation service
   - Integrate translation API (Google Translate or LibreTranslate)
   - Create translation endpoint with language detection
   - Implement content caching for translated strings
@@ -224,7 +224,7 @@
   - **Property 19: Language-specific content delivery**
   - **Validates: Requirements 5.5**
 
-- [x] 14. Ori AI - Demand forecasting
+- [x] 14. Navi service - Demand forecasting
   - Create DemandForecast model for storing predictions
   - Implement time-series forecasting using Prophet or ARIMA
   - Add seasonal adjustment logic
@@ -266,7 +266,7 @@
   - Create user badge association tracking
   - Add badge notification on award
   - Implement badge display on user profiles
-  - Create predefined badges (contributor, mentor excellence, community champion)
+  - Create predefined badges (contributor, Lead excellence, community champion)
   - _Requirements: 2.4, 7.1, 7.2, 7.3, 7.4, 12.5_
 
 - [ ] 16.1 (OPTIONAL) Write property test for milestone badge awards
@@ -284,7 +284,7 @@
 - [x] 17. Dignity-first reputation system
   - Private reputation scores (no public rankings)
   - Award points for positive actions (on-time returns, donations, feedback)
-  - Ori's gentle acknowledgment messages (30% chance)
+  - Navi's gentle acknowledgment messages (30% chance)
   - Optional community highlights (celebrates without ranking)
   - Personal reputation summary endpoint
   - _Requirements: 7.5, 8.5 (aligned with gamification.md principles)_
@@ -381,24 +381,24 @@
   - Ensure all tests pass, ask the user if questions arise.
   - 6/7 tests passing in Docker (PyTorch working), migrations applied
 
-- [x] 24. Mentorship matching system
-  - Create MentorshipConnection model with status tracking
-  - Implement mentor matching algorithm based on language, interests, location
-  - Create mentorship request endpoints
-  - Add mentor acceptance/decline functionality
-  - Implement mentor flag setting on user profiles
+- [x] 24. Lead support matching system
+  - Create MentorshipConnection model with status tracking for the current backend
+  - Implement Lead matching algorithm based on language, interests, location
+  - Create Lead support request endpoints
+  - Add Lead acceptance/decline functionality
+  - Implement Lead availability setting on user profiles
   - _Requirements: 2.3, 12.1, 12.2_
 
-- [ ] 24.1 (OPTIONAL) Write property test for mentor flag setting
-  - **Property 5: Mentor flag setting**
+- [ ] 24.1 (OPTIONAL) Write property test for Lead availability setting
+  - **Property 5: Lead availability setting**
   - **Validates: Requirements 2.3**
 
-- [ ] 24.2 (OPTIONAL) Write property test for mentor matching criteria
-  - **Property 43: Mentor matching criteria**
+- [ ] 24.2 (OPTIONAL) Write property test for Lead matching criteria
+  - **Property 43: Lead matching criteria**
   - **Validates: Requirements 12.1**
 
-- [ ] 24.3 (OPTIONAL) Write property test for mentorship connection activation
-  - **Property 44: Mentorship connection activation**
+- [ ] 24.3 (OPTIONAL) Write property test for Lead support connection activation
+  - **Property 44: Lead support connection activation**
   - **Validates: Requirements 12.2**
 
 - [x] 25. In-app messaging system
@@ -461,7 +461,7 @@
 
 - [ ] 29. Partner resource recommendations
   - Create partner resource listing functionality
-  - Integrate partner resources into Ori AI recommendations
+  - Integrate partner resources into Navi recommendations
   - Implement relevance matching for partner resources
   - _Requirements: 11.4_
 
@@ -627,12 +627,12 @@
   - Implement badge display component
   - Add reputation score visualization
   - Create profile editing screen
-  - Implement mentor toggle
+  - Implement Lead availability toggle
   - _Requirements: 7.3, 2.3_
 
-- [ ] 47. Mobile app - Mentorship features
-  - Create mentor search and matching screen
-  - Implement mentorship request flow
+- [ ] 47. Mobile app - Lead support features
+  - Create Lead search and matching screen
+  - Implement Lead support request flow
   - Create messaging screen with real-time updates
   - Add message translation toggle
   - _Requirements: 12.1, 12.2, 12.3_
@@ -702,7 +702,7 @@
   - Create user profile pages with badge display ✅
   - Implement feedback and incident reporting forms ✅
   - Add leaderboard view (dignity-first, celebrating without ranking) ✅
-  - Create mentor matching interface ✅
+  - Create Lead matching interface ✅
   - Implement in-app messaging with real-time updates (remaining)
   - _Requirements: 7.3, 8.1, 8.3, 12.1, 12.3_
 
@@ -722,6 +722,25 @@
   - Add form validation with helpful error messages ✅
   - _Requirements: 14.1, 15.2_
 
+- [x] 58.1 Product merge - fLOKr + RiseUp language pass
+  - Add `/loop` as the primary Loop route while keeping `/community` usable
+  - Update MVP sidebar labels to Home, Reservations, Items, Hubs, Loop, and Settings
+  - Add Signal composer, Signal filters, and community-useful reactions
+  - Refresh public copy and demo seed content toward Loop, Signals, Moves, Shifts, Circles, Crews, and Leads
+  - Add focused merge, naming, IA, roadmap, data-model, and migration docs
+
+- [x] 58.2 Product language refresh - Navi route and docs polish
+  - Add `/navi` as the canonical guide route and keep `/ori` as a compatibility redirect
+  - Replace remaining user-facing legacy assistant copy with Navi across home, about, contact, privacy, terms, breadcrumbs, dashboard, and chat surfaces
+  - Update active requirements/design/gamification docs for Navi, Leads, and Lexi-in-Shifts language
+  - Keep legacy backend API paths and internal module names stable until a planned backend migration
+
+- [x] 58.3 Web frontend - Navi UI polish and dev chunk resilience
+  - Separate Next.js dev output from production build output so local builds do not invalidate live dev chunks
+  - Remove decorative icon-label helpers from Navi chat and shared web navigation surfaces
+  - Refine the home Navi section layout and shared available-indicator placement
+  - Tighten the home Navi preview and `/navi` chat route so prompt CTAs, example chat, and viewport fit stay aligned
+
 - [ ] 59. (OPTIONAL) Web frontend - Integration tests
   - Test complete user registration and onboarding flow
   - Test item search, reservation, and return flow
@@ -736,7 +755,7 @@
 - [ ] 61. (OPTIONAL) Mobile app - Integration tests
   - Test complete user registration and onboarding flow
   - Test item search, reservation, and return flow
-  - Test mentorship connection and messaging flow
+  - Test Lead support connection and messaging flow
   - Test steward inventory management flow
   - _Requirements: Multiple_
 
